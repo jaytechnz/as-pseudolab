@@ -1783,7 +1783,10 @@ export class Interpreter {
     try {
       const existing = env.get(varName);
       const declType = env.getDeclaredType?.(varName);
-      if (declType === 'CHAR') return raw.charAt(0); // take first character only
+      if (declType === 'CHAR')    return raw.charAt(0);
+      if (declType === 'INTEGER') return parseInt(raw, 10);
+      if (declType === 'REAL')    return parseFloat(raw);
+      if (declType === 'BOOLEAN') return raw.toUpperCase() === 'TRUE';
       if (typeof existing === 'number') return Number(raw);
       if (typeof existing === 'boolean') return raw.toUpperCase() === 'TRUE';
     } catch (_) {}

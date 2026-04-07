@@ -7,7 +7,7 @@
 
 /* ── LIGHT THEME ── */
 [data-theme="light"] {
-  --bg-deep:        #5b000b;
+  --bg-deep:        #0D1B52;
   --bg-card:        #FFFFFF;
   --bg-surface:     #E8F0FB;
   --border:         #C0D0E8;
@@ -102,9 +102,9 @@
   --bp-color:       #FF6B6B;
   --exec-line:      rgba(245,199,0,0.10);
   --exec-gutter:    #FEBD14;
-  --scrollbar:      #0C1A35;
-  --scrollbar-thumb:#1C3A60;
-  --resize-handle:  #1C3A60;
+  --scrollbar:      #1C0008;
+  --scrollbar-thumb:#5C0018;
+  --resize-handle:  #5C0018;
 }
 
 :root {

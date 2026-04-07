@@ -16,6 +16,16 @@ function requireBYREF(source) {
   return /\bBYREF\b/i.test(source) ? null : 'You must pass at least one parameter BYREF.';
 }
 
+function requireTwoLoops(source) {
+  const count = (source.match(/^\s*(FOR|WHILE|REPEAT)\b/gim) || []).length;
+  return count >= 2 ? null : 'You must use two separate loops as described.';
+}
+
+function requireNestedLoops(source) {
+  const count = (source.match(/^\s*(FOR|WHILE|REPEAT)\b/gim) || []).length;
+  return count >= 2 ? null : 'You must use nested loops (an outer loop and an inner loop).';
+}
+
 // ══════════════════════════════════════════════════════════════════════════════
 // CATEGORY METADATA
 // ══════════════════════════════════════════════════════════════════════════════
@@ -421,7 +431,8 @@ ex('ite-12','iteration','WHILE: Population Count (1-bits)','hard',
 ex('ite-13','iteration','FOR: Stars Pattern','medium',
 `INPUT an integer \`Rows\` (1–5). Use nested FOR loops to OUTPUT a right-angled triangle of asterisks: row 1 has 1 star, row 2 has 2, etc.`,
 [t(['3'],['*','**','***']), t(['1'],['*'])],
-['Use an outer loop from 1 to Rows', 'Build each row as a string by concatenating "*" in an inner loop']),
+['Use an outer loop from 1 to Rows', 'Build each row as a string by concatenating "*" in an inner loop'],
+'', '', requireNestedLoops),
 
 ex('ite-14','iteration','FOR: Checksum Calculation','hard',
 `INPUT 8 byte values (integers 0–255). Calculate the checksum: sum all 8 values then take MOD 256. OUTPUT the checksum.`,
@@ -914,7 +925,8 @@ ex('arr-06','arrays','Array: Count Elements in Range','medium',
 ex('arr-07','arrays','Array: Bubble Sort (Ascending)','hard',
 `INPUT 5 integers into an array \`Data : ARRAY[1:5] OF INTEGER\`. Sort them ascending using bubble sort. OUTPUT all 5 values (one per line).`,
 [t(['5','3','8','1','4'],['1','3','4','5','8']), t(['9','7','5','3','1'],['1','3','5','7','9'])],
-['Outer loop: 1 to 4; inner loop compares adjacent elements', 'Swap adjacent elements when out of order using a Temp variable']),
+['Outer loop: 1 to 4; inner loop compares adjacent elements', 'Swap adjacent elements when out of order using a Temp variable'],
+'', '', requireNestedLoops),
 
 ex('arr-08','arrays','Array: Linear Search','medium',
 `Declare \`Data : ARRAY[1:6] OF INTEGER\` with values 3, 7, 1, 9, 4, 6. INPUT a target. OUTPUT its 1-based position, or -1 if not found.`,
@@ -924,12 +936,14 @@ ex('arr-08','arrays','Array: Linear Search','medium',
 ex('arr-09','arrays','2D Array: Fill and Display','medium',
 `Declare \`Grid : ARRAY[1:3, 1:3] OF INTEGER\`. Use nested FOR loops to assign \`Grid[Row, Col] ← Row * Col\`. Then OUTPUT all 9 values row by row.`,
 [t([],['1','2','3','2','4','6','3','6','9'])],
-['Use nested FOR loops — outer for rows, inner for columns', 'Each element should be the product of its row and column indices']),
+['Use nested FOR loops — outer for rows, inner for columns', 'Each element should be the product of its row and column indices'],
+'', '', requireNestedLoops),
 
 ex('arr-10','arrays','2D Array: Row Sum','hard',
 `Declare \`Matrix : ARRAY[1:3, 1:3] OF INTEGER\`. Fill row 1 with 1,2,3; row 2 with 4,5,6; row 3 with 7,8,9. OUTPUT the sum of each row on separate lines.`,
 [t([],['6','15','24'])],
-['For each row, sum all three column values', 'OUTPUT the row sum after the inner loop']),
+['For each row, sum all three column values', 'OUTPUT the row sum after the inner loop'],
+'', '', requireNestedLoops),
 
 ex('arr-11','arrays','Array: Copy','medium',
 `Declare \`Original : ARRAY[1:4] OF INTEGER\` with values 5, 10, 15, 20. Copy it to \`Copy : ARRAY[1:4] OF INTEGER\` using a FOR loop. Change \`Original[1] ← 99\`. OUTPUT all four elements of \`Copy\`.`,
@@ -944,7 +958,8 @@ ex('arr-12','arrays','Array: Count Positive/Negative/Zero','hard',
 ex('arr-13','arrays','Array: Remove Duplicates (Mark)','hard',
 `Declare \`Data : ARRAY[1:6] OF INTEGER\` with values 3, 5, 3, 7, 5, 9. Count and OUTPUT how many unique values there are.`,
 [t([],['4'])],
-['For each element at position i, check if it appeared at any earlier position', 'Use a nested inner loop from 1 to i-1']),
+['For each element at position i, check if it appeared at any earlier position', 'Use a nested inner loop from 1 to i-1'],
+'', '', requireNestedLoops),
 
 ex('arr-14','arrays','Array: Frequency Count','hard',
 `INPUT 10 integers (each between 1 and 5 inclusive) into an array \`Rolls\`. Count how many times each value 1–5 appears. OUTPUT the five frequencies.`,
@@ -964,7 +979,8 @@ ex('arr-16','arrays','Array: Shift Left','hard',
 ex('arr-17','arrays','2D Array: Diagonal Sum','hard',
 `Declare \`Grid : ARRAY[1:4, 1:4] OF INTEGER\`. Use nested FOR loops to assign \`Grid[Row, Col] ← Row + Col\`. OUTPUT the sum of the main diagonal (where Row = Col).`,
 [t([],['20'])],
-['Diagonal elements: Grid[1,1]=2, Grid[2,2]=4, Grid[3,3]=6, Grid[4,4]=8; sum = 20']),
+['Diagonal elements: Grid[1,1]=2, Grid[2,2]=4, Grid[3,3]=6, Grid[4,4]=8; sum = 20'],
+'', '', requireNestedLoops),
 
 ex('arr-18','arrays','Array: Second Largest','hard',
 `INPUT 5 integers into an array. Find and OUTPUT the second largest value (assume all values are distinct).`,
@@ -1019,7 +1035,7 @@ ex('rec-06','records','Array of Records','hard',
 ['Use a FOR loop to INPUT Class[i].Name then Class[i].Mark for each student', 'Use a second FOR loop to OUTPUT each entry — convert the mark with NUM_TO_STR and join with ": " using &'],
 '',
 '',
-src => /NUM_TO_STR/i.test(src) ? null : 'You must use NUM_TO_STR() to convert the Mark field when outputting it.'),
+src => requireTwoLoops(src) ?? (/NUM_TO_STR/i.test(src) ? null : 'You must use NUM_TO_STR() to convert the Mark field when outputting it.')),
 
 ex('rec-07','records','Array of Records: Find Highest Mark','hard',
 `Using a \`StudentRecord\` type (Name : STRING, Mark : INTEGER), declare \`Class : ARRAY[1:4] OF StudentRecord\`. Populate: Alice/80, Bob/95, Charlie/67, Diana/88. Find and OUTPUT the name of the student with the highest mark.`,
@@ -1068,7 +1084,8 @@ ex('rec-14','records','Record: Swap Two Records','hard',
 ex('rec-15','records','Array of Records: Sort by Field','hard',
 `Define \`StudentRecord\` (Name : STRING, Mark : INTEGER). Declare \`Class : ARRAY[1:4] OF StudentRecord\`. Populate: Alice/70, Dave/85, Bob/60, Carol/90. Sort by Mark ascending using bubble sort (swap both fields when out of order). OUTPUT each name and mark.`,
 [t([],['Bob','60','Alice','70','Dave','85','Carol','90'])],
-['Compare Class[i].Mark and Class[i+1].Mark', 'When out of order, swap both Name and Mark fields using temporary variables']),
+['Compare Class[i].Mark and Class[i+1].Mark', 'When out of order, swap both Name and Mark fields using temporary variables'],
+'', '', requireNestedLoops),
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FILE HANDLING  (20)
@@ -1137,7 +1154,8 @@ ex('fil-12','files','File: Two Files','hard',
 ex('fil-13','files','File: Reverse Lines','hard',
 `Open \`"letters.txt"\` FOR WRITE. Write \`"A"\`, \`"B"\`, \`"C"\`, \`"D"\`. CLOSEFILE. Re-open FOR READ. Read all lines into an array. CLOSEFILE, then OUTPUT the lines in reverse order.`,
 [t([],['D','C','B','A'])],
-['Read into an array using READFILE inside a loop', 'OUTPUT with a FOR loop using STEP -1']),
+['Read into an array using READFILE inside a loop', 'OUTPUT with a FOR loop using STEP -1'],
+'', '', requireTwoLoops),
 
 ex('fil-14','files','File: Average from File','hard',
 `Write values 10, 20, 30, 40, 50 to \`"data.txt"\` using a FOR loop with STEP 10. Read them back and OUTPUT their average.`,
@@ -1214,12 +1232,14 @@ ex('alg-06','algorithms','Counting Occurrences','medium',
 ex('alg-07','algorithms','Bubble Sort (Ascending)','hard',
 `INPUT 6 integers into an array \`Data\`. Sort them ascending using bubble sort. OUTPUT all 6 values (one per line).`,
 [t(['5','3','8','1','4','7'],['1','3','4','5','7','8']), t(['9','7','5','3','2','1'],['1','2','3','5','7','9'])],
-['Outer loop: 1 to 5; inner loop compares adjacent elements', 'Swap when out of order using a Temp variable']),
+['Outer loop: 1 to 5; inner loop compares adjacent elements', 'Swap when out of order using a Temp variable'],
+'', '', requireNestedLoops),
 
 ex('alg-08','algorithms','Bubble Sort (Descending)','hard',
 `INPUT 5 integers into an array \`Data\`. Sort them descending using bubble sort. OUTPUT all 5 (largest first).`,
 [t(['5','3','8','1','4'],['8','5','4','3','1']), t(['1','3','5','7','9'],['9','7','5','3','1'])],
-['Same structure as ascending but swap when adjacent elements are in the wrong order for descending']),
+['Same structure as ascending but swap when adjacent elements are in the wrong order for descending'],
+'', '', requireNestedLoops),
 
 ex('alg-09','algorithms','Binary Search','hard',
 `Declare sorted \`Data : ARRAY[1:8] OF INTEGER\` with values 4, 8, 15, 16, 23, 42, 56, 73. INPUT a target. Use binary search to OUTPUT the 1-based position, or \`-1\` if not found.`,

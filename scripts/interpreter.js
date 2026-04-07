@@ -1,5 +1,5 @@
-// ─── Cambridge IGCSE Pseudocode Interpreter ───────────────────────────────────
-// Implements the full 0478 pseudocode specification.
+// ─── Cambridge AS & A Level Pseudocode Interpreter ────────────────────────────
+// Implements the 9618 pseudocode specification.
 // No eval() — pure recursive descent parser + tree-walk interpreter.
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -17,7 +17,7 @@ const TT = {
   EQ: 'EQ', NEQ: 'NEQ', LT: 'LT', LTE: 'LTE', GT: 'GT', GTE: 'GTE',
   LPAREN: 'LPAREN', RPAREN: 'RPAREN',
   LBRACKET: 'LBRACKET', RBRACKET: 'RBRACKET',
-  COMMA: 'COMMA', COLON: 'COLON',
+  COMMA: 'COMMA', COLON: 'COLON', DOT: 'DOT',
   // Keywords — all uppercase in Cambridge pseudocode
   KW: 'KW',
   EOF: 'EOF'
@@ -31,7 +31,8 @@ const KEYWORDS = new Set([
   'REPEAT','UNTIL',
   'PROCEDURE','ENDPROCEDURE','CALL',
   'FUNCTION','ENDFUNCTION','RETURNS','RETURN',
-  'BYREF','BYVALUE',
+  'BYREF','BYVALUE','BYVAL',
+  'TYPE','ENDTYPE',
   'OPENFILE','READFILE','WRITEFILE','CLOSEFILE',
   'READ','WRITE','APPEND',
   'INPUT','OUTPUT',
@@ -44,8 +45,9 @@ const KEYWORDS = new Set([
 // Built-in library function names — NOT reserved as keywords so that identifiers
 // like 'Length' or 'Random' can be used as variable names without clashing.
 const BUILTIN_NAMES = new Set([
-  'LENGTH','LCASE','UCASE','SUBSTRING','TO_STRING','TO_INTEGER','TO_REAL',
-  'ROUND','RANDOM','EOF',
+  'LENGTH','LCASE','UCASE','SUBSTRING','MID','RIGHT','LEFT',
+  'TO_STRING','TO_INTEGER','TO_REAL','STR_TO_NUM','NUM_TO_STR',
+  'ROUND','INT','RANDOM','RAND','EOF',
 ]);
 
 class Token {
@@ -160,6 +162,7 @@ class Lexer {
         case ']': this.tokens.push(new Token(TT.RBRACKET, ']', line)); break;
         case ',': this.tokens.push(new Token(TT.COMMA, ',', line)); break;
         case ':': this.tokens.push(new Token(TT.COLON, ':', line)); break;
+        case '.': this.tokens.push(new Token(TT.DOT, '.', line)); break;
         case '=': this.tokens.push(new Token(TT.EQ, '=', line)); break;
         case '<':
           if (this.peek() === '=') { this.advance(); this.tokens.push(new Token(TT.LTE, '<=', line)); }
@@ -276,6 +279,7 @@ class Parser {
         case 'RETURN':    return this.parseReturn();
         case 'INPUT':     return this.parseInput();
         case 'OUTPUT':    return this.parseOutput();
+        case 'TYPE':      return this.parseTypeDef();
         case 'OPENFILE':  return this.parseOpenFile();
         case 'READFILE':  return this.parseReadFile();
         case 'WRITEFILE': return this.parseWriteFile();
@@ -355,6 +359,29 @@ class Parser {
     return { kind: 'Constant', name, value, line };
   }
 
+  // ── TYPE definition ───────────────────────────────────────────────────────
+
+  parseTypeDef() {
+    const line = this.peek().line;
+    this.advance(); // TYPE
+    const typeName = this.expect(TT.IDENTIFIER).value;
+    const fields = [];
+    // Collect DECLARE field : type lines until ENDTYPE
+    while (!this.isEOF() && !this.check(TT.KW, 'ENDTYPE')) {
+      if (this.check(TT.KW, 'DECLARE')) {
+        this.advance(); // DECLARE
+        const fieldName = this.expect(TT.IDENTIFIER).value;
+        this.expect(TT.COLON);
+        const fieldTypeTok = this.advance(); // INTEGER, REAL, etc.
+        fields.push({ name: fieldName, type: fieldTypeTok.value });
+      } else {
+        this.advance(); // skip blank lines / unknown
+      }
+    }
+    this.expect(TT.KW, 'ENDTYPE');
+    return { kind: 'TypeDef', typeName, fields, line };
+  }
+
   // ── Assignment / procedure call via identifier ───────────────────────────
 
   parseAssignOrCall() {
@@ -385,7 +412,19 @@ class Parser {
       let idx2 = null;
       if (this.match(TT.COMMA)) idx2 = this.parseExpr();
       this.expect(TT.RBRACKET);
+      // Allow array element member access: Arr[i].Field
+      if (this.check(TT.DOT)) {
+        this.advance();
+        const field = this.expect(TT.IDENTIFIER).value;
+        return { kind: 'MemberAccess', object: { kind: 'ArrayAccess', name, idx1, idx2, line }, field, line };
+      }
       return { kind: 'ArrayAccess', name, idx1, idx2, line };
+    }
+    // Member access: Var.Field
+    if (this.check(TT.DOT)) {
+      this.advance();
+      const field = this.expect(TT.IDENTIFIER).value;
+      return { kind: 'MemberAccess', object: { kind: 'Var', name, line }, field, line };
     }
     return { kind: 'Var', name, line };
   }
@@ -627,8 +666,9 @@ class Parser {
 
   parseParam() {
     let byRef = false;
-    if (this.match(TT.KW, 'BYREF'))   byRef = true;
-    else this.match(TT.KW, 'BYVALUE'); // optional keyword, default
+    if (this.match(TT.KW, 'BYREF'))        byRef = true;
+    else if (this.match(TT.KW, 'BYVAL'))   byRef = false; // AS 9618 spelling
+    else this.match(TT.KW, 'BYVALUE');     // optional keyword, default
     const nameTok = this.expect(TT.IDENTIFIER);
     const name = nameTok.value;
     this._checkIdentifierName(name, nameTok.line);
@@ -801,7 +841,19 @@ class Parser {
         let idx2 = null;
         if (this.match(TT.COMMA)) idx2 = this.parseExpr();
         this.expect(TT.RBRACKET);
+        // Allow Arr[i].Field in expressions
+        if (this.check(TT.DOT)) {
+          this.advance();
+          const field = this.expect(TT.IDENTIFIER).value;
+          return { kind: 'MemberAccess', object: { kind: 'ArrayAccess', name: t.value, idx1, idx2, line: t.line }, field, line: t.line };
+        }
         return { kind: 'ArrayAccess', name: t.value, idx1, idx2, line: t.line };
+      }
+      // Member access in expression: Var.Field
+      if (this.check(TT.DOT)) {
+        this.advance();
+        const field = this.expect(TT.IDENTIFIER).value;
+        return { kind: 'MemberAccess', object: { kind: 'Var', name: t.value, line: t.line }, field, line: t.line };
       }
       // User-defined function call
       if (this.check(TT.LPAREN)) {
@@ -933,6 +985,45 @@ class PseudoArray {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
+// PSEUDO RECORD  (TYPE...ENDTYPE instances)
+// ══════════════════════════════════════════════════════════════════════════════
+
+class PseudoRecord {
+  constructor(typeName, fields) {
+    this.typeName = typeName;
+    this.fields   = {}; // field name (uppercase) → value
+    for (const { name, type } of fields) {
+      const key = name.toUpperCase();
+      switch (type.toUpperCase()) {
+        case 'INTEGER': this.fields[key] = 0;     break;
+        case 'REAL':    this.fields[key] = 0.0;   break;
+        case 'BOOLEAN': this.fields[key] = false; break;
+        default:        this.fields[key] = '';    break; // STRING / CHAR
+      }
+      // Store original casing for display
+      this.fields[`__name_${key}`] = name;
+    }
+    this._fieldDefs = fields;
+  }
+
+  get(field) {
+    const key = field.toUpperCase();
+    if (!(key in this.fields)) throw new RuntimeError(`Record has no field '${field}'`);
+    return this.fields[key];
+  }
+
+  set(field, value) {
+    const key = field.toUpperCase();
+    if (!(key in this.fields)) throw new RuntimeError(`Record has no field '${field}'`);
+    this.fields[key] = value;
+  }
+
+  display() {
+    return this._fieldDefs.map(f => `${f.name}: ${this.fields[f.name.toUpperCase()]}`).join(', ');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
 // INTERPRETER
 // ══════════════════════════════════════════════════════════════════════════════
 
@@ -956,6 +1047,7 @@ export class Interpreter {
     this.globalEnv    = new Environment();
     this.procedures   = new Map();
     this.functions    = new Map();
+    this.typeDefs     = new Map(); // user-defined record types (TYPE...ENDTYPE)
     this.outputLines  = [];
     this.virtualFiles = new Map(); // filename → { mode, lines[], cursor }
     this.inputQueue   = [];
@@ -1079,6 +1171,11 @@ export class Interpreter {
 
     switch (stmt.kind) {
 
+      case 'TypeDef': {
+        this.typeDefs.set(stmt.typeName.toUpperCase(), stmt);
+        break;
+      }
+
       case 'Declare': {
         this.constructsUsed.add('DECLARE');
         const ti = stmt.typeInfo;
@@ -1089,9 +1186,23 @@ export class Interpreter {
             const hi1 = this._evalNum(ti.hi1, env);
             const lo2 = ti.lo2 ? this._evalNum(ti.lo2, env) : null;
             const hi2 = ti.hi2 ? this._evalNum(ti.hi2, env) : null;
-            env.defineTyped(declName, new PseudoArray(lo1, hi1, lo2, hi2, ti.elementType ?? null), ti.name ?? 'ARRAY');
+            // Array of user-defined records
+            const arr = new PseudoArray(lo1, hi1, lo2, hi2, ti.elementType ?? null);
+            const recDef = this.typeDefs.get((ti.elementType ?? '').toUpperCase());
+            if (recDef) {
+              for (let idx = 0; idx < arr.data.length; idx++) {
+                arr.data[idx] = new PseudoRecord(recDef.typeName, recDef.fields);
+              }
+            }
+            env.defineTyped(declName, arr, ti.name ?? 'ARRAY');
           } else {
-            env.defineTyped(declName, this._defaultValue(ti.name), ti.name);
+            // Check if it's a user-defined record type
+            const recDef = this.typeDefs.get((ti.name ?? '').toUpperCase());
+            if (recDef) {
+              env.defineTyped(declName, new PseudoRecord(recDef.typeName, recDef.fields), ti.name);
+            } else {
+              env.defineTyped(declName, this._defaultValue(ti.name), ti.name);
+            }
           }
         }
         break;
@@ -1333,8 +1444,22 @@ export class Interpreter {
     // BYREF: write back
     for (let i = 0; i < def.params.length; i++) {
       const p = def.params[i];
-      if (p.byRef && argNodes[i]?.kind === 'Var') {
-        callerEnv.set(argNodes[i].name, localEnv.get(p.name));
+      if (!p.byRef) continue;
+      const argNode = argNodes[i];
+      if (!argNode) continue;
+      const writtenVal = localEnv.get(p.name);
+      if (argNode.kind === 'Var') {
+        callerEnv.set(argNode.name, writtenVal);
+      } else if (argNode.kind === 'ArrayAccess') {
+        const arr = callerEnv.get(argNode.name);
+        if (arr instanceof PseudoArray) {
+          const i2 = this._evalNum(argNode.idx1, callerEnv);
+          const j2 = argNode.idx2 ? this._evalNum(argNode.idx2, callerEnv) : null;
+          arr.set(i2, j2, writtenVal);
+        }
+      } else if (argNode.kind === 'MemberAccess') {
+        const obj = this._eval(argNode.object, callerEnv);
+        if (obj instanceof PseudoRecord) obj.set(argNode.field, writtenVal);
       }
     }
   }
@@ -1380,6 +1505,13 @@ export class Interpreter {
         const i = this._evalNum(node.idx1, env);
         const j = node.idx2 ? this._evalNum(node.idx2, env) : null;
         return arr.get(i, j);
+      }
+
+      case 'MemberAccess': {
+        const obj = this._eval(node.object, env);
+        if (!(obj instanceof PseudoRecord))
+          throw new RuntimeError(`Cannot access field '${node.field}' — not a record`, node.line);
+        return obj.get(node.field);
       }
 
       case 'BinOp':
@@ -1463,18 +1595,33 @@ export class Interpreter {
         return String(this._eval(args[0], env)).toLowerCase();
       case 'UCASE':
         return String(this._eval(args[0], env)).toUpperCase();
-      case 'SUBSTRING': {
+      case 'SUBSTRING':
+      case 'MID': {
         const str   = String(this._eval(args[0], env));
         const start = this._evalNum(args[1], env) - 1; // 1-based
         const len   = this._evalNum(args[2], env);
         return str.substr(start, len);
       }
+      case 'RIGHT': {
+        const str = String(this._eval(args[0], env));
+        const len = this._evalNum(args[1], env);
+        return str.slice(-len);
+      }
+      case 'LEFT': {
+        const str = String(this._eval(args[0], env));
+        const len = this._evalNum(args[1], env);
+        return str.slice(0, len);
+      }
       case 'TO_STRING':
+      case 'NUM_TO_STR':
         return String(this._eval(args[0], env));
       case 'TO_INTEGER':
+      case 'STR_TO_NUM':
         return parseInt(this._eval(args[0], env), 10);
       case 'TO_REAL':
         return parseFloat(this._eval(args[0], env));
+      case 'INT':
+        return Math.trunc(this._evalNum(args[0], env));
       case 'ROUND': {
         const val = this._eval(args[0], env);
         const dp  = args[1] ? this._evalNum(args[1], env) : 0;
@@ -1483,6 +1630,7 @@ export class Interpreter {
         return Object.assign(new Number(n), { _dp: dp });
       }
       case 'RANDOM':
+      case 'RAND':
         return Math.random();
       case 'EOF': {
         const fname = this._stringify(this._eval(args[0], env));
@@ -1572,6 +1720,11 @@ export class Interpreter {
       const i = this._evalNum(lhs.idx1, env);
       const j = lhs.idx2 ? this._evalNum(lhs.idx2, env) : null;
       arr.set(i, j, _unbox(val));
+    } else if (lhs.kind === 'MemberAccess') {
+      const obj = this._eval(lhs.object, env);
+      if (!(obj instanceof PseudoRecord))
+        throw new RuntimeError(`Cannot assign to field '${lhs.field}' — not a record`, lhs.line);
+      obj.set(lhs.field, val);
     }
   }
 
@@ -1644,7 +1797,8 @@ export class Interpreter {
   _stringify(v) {
     if (v === null || v === undefined) return '';
     if (typeof v === 'boolean') return v ? 'TRUE' : 'FALSE';
-    if (v instanceof PseudoArray) return v.display();
+    if (v instanceof PseudoArray)  return v.display();
+    if (v instanceof PseudoRecord) return v.display();
     if (v instanceof Number && v._dp !== undefined) return v.valueOf().toFixed(v._dp);
     return String(v);
   }

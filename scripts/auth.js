@@ -30,10 +30,21 @@ function domainOf(email) {
   return email.split('@')[1]?.toLowerCase() ?? '';
 }
 
+// Accounts that are automatically provisioned as superadmin at registration.
+// After registering, Firestore will hold role: 'superadmin' for these emails.
+const SUPERADMIN_EMAILS = new Set([
+  'j.smith@cga.school',
+]);
+
 function roleForDomain(domain) {
   if (domain === 'cga.school')         return 'teacher';
   if (domain === 'student.cga.school') return 'student';
   return null;
+}
+
+function roleForEmail(email) {
+  if (SUPERADMIN_EMAILS.has(email.toLowerCase())) return 'superadmin';
+  return roleForDomain(domainOf(email));
 }
 
 function validateDomain(email) {
@@ -49,7 +60,8 @@ function validateDomain(email) {
 // ─── Register ────────────────────────────────────────────────────────────────
 
 export async function registerUser(email, password, displayName, classCode = '') {
-  const role = validateDomain(email);
+  validateDomain(email); // still enforces domain restriction
+  const role = roleForEmail(email);
 
   const cred = await createUserWithEmailAndPassword(auth, email, password);
   await updateProfile(cred.user, { displayName });

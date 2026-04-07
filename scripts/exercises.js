@@ -1011,9 +1011,15 @@ ex('rec-05','records','Record: Update a Field','medium',
 ['Use dot notation to increment the Value field, adding 1 to it three times', 'Two separate OUTPUT statements']),
 
 ex('rec-06','records','Array of Records','hard',
-`Define a \`StudentRecord\` type with \`Name : STRING\` and \`Mark : INTEGER\`. Declare \`Class : ARRAY[1:3] OF StudentRecord\`. Assign: Class[1] Name="Alice" Mark=85; Class[2] Name="Bob" Mark=72; Class[3] Name="Charlie" Mark=91. OUTPUT all names and marks.`,
-[t([],['Alice','85','Bob','72','Charlie','91'])],
-['Access array-of-record fields as Class[Index].Name and Class[Index].Mark', 'Use a FOR loop to output all entries']),
+`Define a \`StudentRecord\` type with \`Name : STRING\` and \`Mark : INTEGER\`. Declare \`Class : ARRAY[1:3] OF StudentRecord\`. Use a loop to INPUT each student's name then mark. Use a second loop to OUTPUT each entry on one line in the format \`Alice: 85\`, using \`NUM_TO_STR\` to convert the mark.`,
+[
+  t(['Alice','85','Bob','72','Charlie','91'],  ['Alice: 85','Bob: 72','Charlie: 91']),
+  t(['Diana','90','Eve','55','Frank','78'],     ['Diana: 90','Eve: 55','Frank: 78']),
+],
+['Use a FOR loop to INPUT Class[i].Name then Class[i].Mark for each student', 'Use a second FOR loop to OUTPUT each entry — convert the mark with NUM_TO_STR and join with ": " using &'],
+'',
+'',
+src => /NUM_TO_STR/i.test(src) ? null : 'You must use NUM_TO_STR() to convert the Mark field when outputting it.'),
 
 ex('rec-07','records','Array of Records: Find Highest Mark','hard',
 `Using a \`StudentRecord\` type (Name : STRING, Mark : INTEGER), declare \`Class : ARRAY[1:4] OF StudentRecord\`. Populate: Alice/80, Bob/95, Charlie/67, Diana/88. Find and OUTPUT the name of the student with the highest mark.`,

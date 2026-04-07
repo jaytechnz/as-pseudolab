@@ -471,7 +471,19 @@ class Parser {
       let idx2 = null;
       if (this.match(TT.COMMA)) idx2 = this.parseExpr();
       this.expect(TT.RBRACKET);
+      // Also handle Array[i].Field
+      if (this.check(TT.DOT)) {
+        this.advance();
+        const field = this.expect(TT.IDENTIFIER).value;
+        return { kind: 'Input', target: name, idx1, idx2, field, line };
+      }
       return { kind: 'Input', target: name, idx1, idx2, line };
+    }
+    // Handle Var.Field dot notation
+    if (this.check(TT.DOT)) {
+      this.advance();
+      const field = this.expect(TT.IDENTIFIER).value;
+      return { kind: 'Input', target: name, field, line };
     }
     return { kind: 'Input', target: name, line };
   }
@@ -1250,10 +1262,28 @@ export class Interpreter {
         if (stmt.idx1 !== undefined) {
           const arr = env.get(stmt.target);
           if (!(arr instanceof PseudoArray)) throw new RuntimeError(`'${stmt.target}' is not an array`, stmt.line);
-          const coerced = this._coerceInput(raw, env, stmt.target, arr.elementType);
-          const i = this._evalNum(stmt.idx1, env);
-          const j = stmt.idx2 ? this._evalNum(stmt.idx2, env) : null;
-          arr.set(i, j, coerced);
+          if (stmt.field !== undefined) {
+            // INPUT Arr[i].Field
+            const i = this._evalNum(stmt.idx1, env);
+            const j = stmt.idx2 ? this._evalNum(stmt.idx2, env) : null;
+            const rec = arr.get(i, j);
+            if (!(rec instanceof PseudoRecord)) throw new RuntimeError(`Element is not a record`, stmt.line);
+            const fieldType = rec._fieldDefs.find(f => f.name.toUpperCase() === stmt.field.toUpperCase())?.type;
+            const coerced = fieldType ? this._coerceInput(raw, env, stmt.target, fieldType) : raw;
+            rec.set(stmt.field, coerced);
+          } else {
+            const coerced = this._coerceInput(raw, env, stmt.target, arr.elementType);
+            const i = this._evalNum(stmt.idx1, env);
+            const j = stmt.idx2 ? this._evalNum(stmt.idx2, env) : null;
+            arr.set(i, j, coerced);
+          }
+        } else if (stmt.field !== undefined) {
+          // INPUT Var.Field
+          const rec = env.get(stmt.target);
+          if (!(rec instanceof PseudoRecord)) throw new RuntimeError(`'${stmt.target}' is not a record`, stmt.line);
+          const fieldType = rec._fieldDefs.find(f => f.name.toUpperCase() === stmt.field.toUpperCase())?.type;
+          const coerced = fieldType ? this._coerceInput(raw, env, stmt.target, fieldType) : raw;
+          rec.set(stmt.field, coerced);
         } else {
           const coerced = this._coerceInput(raw, env, stmt.target);
           if (env.has(stmt.target)) env.set(stmt.target, coerced);

@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CGA AS Level Pseudocode Simulator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,700;9..144,900&family=Audiowide&display=swap" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/opendyslexic" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/editor.css">
+  <link rel="stylesheet" href="css/challenges.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/suggestions.css">
+</head>
+<body>
+
+<!-- ═══════════════════ LOGIN PAGE ═══════════════════ -->
+<div id="login-page">
+  <div class="login-card">
+    <h1 class="login-title">PseudoLab - AS</h1>
+     <div class="login-logo">
+      <span class="login-logo-img"><img src="assets/winston-thumbs-up.png" alt="CGA Winston mascot"/></span>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="signin">Sign In</button>
+      <button class="auth-tab" data-tab="signup">Register</button>
+    </div>
+
+    <!-- Sign In Form -->
+    <form id="signin-form" class="auth-form active">
+      <div class="form-group">
+        <label for="signin-email">School Email</label>
+        <input type="email" id="signin-email" placeholder="name@cga.school or name@student.cga.school" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="signin-password">Password</label>
+        <div class="input-pw-wrap">
+          <input type="text" class="pw-masked" id="signin-password" placeholder="••••••••" autocomplete="current-password">
+          <button type="button" class="pw-toggle" data-target="signin-password" aria-label="Show password">
+            <svg class="pw-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="pw-eye-off hidden" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="signin-error" class="auth-error hidden"></div>
+      <button type="submit" class="btn-primary btn-full" id="signin-btn">
+        <span class="btn-label">Sign In</span>
+        <span class="btn-spinner hidden">●</span>
+      </button>
+      <button type="button" class="forgot-password-link" id="forgot-password-btn">Forgot password?</button>
+    </form>
+
+    <!-- Register Form -->
+    <form id="signup-form" class="auth-form">
+      <div class="form-group">
+        <label for="signup-name">Full Name</label>
+        <input type="text" id="signup-name" placeholder="Your name" autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label for="signup-email">School Email</label>
+        <input type="email" id="signup-email" placeholder="name@cga.school or name@student.cga.school" autocomplete="email">
+        <small class="form-hint">This site is for CGA students and teachers only.</small>
+      </div>
+      <div class="form-group">
+        <label for="signup-classcode">Class Code</label>
+        <input type="text" id="signup-classcode" placeholder="e.g. CS9A-2025" autocomplete="off">
+        <small class="form-hint">Ask your teacher for the class code. You can change it later.</small>
+      </div>
+      <div class="form-group">
+        <label for="signup-password">Password</label>
+        <div class="input-pw-wrap">
+          <input type="text" class="pw-masked" id="signup-password" placeholder="At least 8 characters" autocomplete="new-password">
+          <button type="button" class="pw-toggle" data-target="signup-password" aria-label="Show password">
+            <svg class="pw-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="pw-eye-off hidden" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="signup-error" class="auth-error hidden"></div>
+      <button type="submit" class="btn-primary btn-full" id="signup-btn">
+        <span class="btn-label">Create Account</span>
+        <span class="btn-spinner hidden">●</span>
+      </button>
+    </form>
+
+    <p class="login-footer">
+      &copy; Crimson Global Academy 2026<br>
+      Cambridge AS Level Computer Science (9618)
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════ MAIN APP ═══════════════════ -->
+<div id="app" class="hidden">
+
+  <!-- Title Bar -->
+  <header class="app-header">
+    <div class="header-left">
+      <span class="logo-text">PseudoLab - AS Level</span>
+    </div>
+    <div class="header-center">
+      <span id="program-title-display" class="program-title-display" title="Click to rename">Untitled Program</span>
+    </div>
+    <div class="header-right">
+      <button id="btn-dashboard" class="btn-icon teacher-only hidden" title="Teacher Dashboard">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      </button>
+      <div class="user-info">
+        <span id="user-role-badge" class="role-badge"></span>
+        <span id="user-name-display" class="user-name"></span>
+      </div>
+      <button id="btn-logout" class="btn-ghost btn-sm">Sign Out</button>
+    </div>
+  </header>
+
+  <!-- Body: activity bar + sidebar + editor -->
+  <div class="app-body">
+
+    <!-- ── Sidebar (Explorer) ── -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-title">Explorer</span>
+        <div class="sidebar-header-actions">
+          <button id="btn-new-program" class="btn-accent btn-sm" title="New program">+ New</button>
+          <button id="btn-close-explorer" class="ref-collapse-btn" title="Hide Explorer">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sidebar mode tabs: Programs | Challenges -->
+      <div class="sidebar-tabs">
+        <button class="sidebar-tab active" id="tab-programs" data-view="programs">Programs</button>
+        <button class="sidebar-tab" id="tab-challenges" data-view="challenges">Challenges</button>
+      </div>
+
+      <!-- ── Programs view ── -->
+      <div id="sidebar-programs-view">
+        <div class="sidebar-search">
+          <input type="text" id="program-search" placeholder="Search programs…">
+        </div>
+        <div id="program-list" class="program-list">
+          <div class="program-list-empty">No saved programs yet.<br>Click <strong>+ New</strong> to start.</div>
+        </div>
+      </div>
+
+      <!-- ── Challenges view ── -->
+      <div id="sidebar-challenges-view" class="hidden">
+        <div class="ch-xp-block">
+          <div class="ch-xp-row">
+            <span id="ch-level-display" class="ch-level">Level 1</span>
+            <span id="ch-xp-display" class="ch-xp">0 XP</span>
+          </div>
+          <div class="ch-xp-bar"><div id="ch-xp-bar-fill" class="ch-xp-bar-fill" style="width:0%"></div></div>
+          <button id="btn-leaderboard" class="btn-leaderboard">🏆 Class Leaderboard</button>
+        </div>
+        <div id="challenge-list" class="challenge-list"></div>
+      </div>
+
+      <div class="sidebar-footer">
+        <button id="btn-import-txt" class="btn-ghost btn-sm sidebar-btn" title="Import .txt file">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Import .txt
+        </button>
+        <button id="btn-export-txt" class="btn-ghost btn-sm sidebar-btn" title="Export as .txt">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export .txt
+        </button>
+        <input type="file" id="file-input-txt" accept=".txt,.pseudo" class="hidden">
+      </div>
+    </aside>
+
+    <!-- ── Editor Area ── -->
+    <main class="editor-main">
+
+      <!-- Editor Tab Bar -->
+      <div class="editor-tabbar">
+        <div class="editor-tab active" id="active-tab">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+          <span id="tab-filename">untitled.pseudo</span>
+          <span id="tab-dirty" class="tab-dirty hidden">●</span>
+        </div>
+        <div class="tabbar-actions">
+          <div class="sg-wrap" id="sg-wrap">
+            <button id="btn-suggestions" class="btn-ghost btn-sm sg-toggle-btn" title="Suggestions &amp; feedback">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Suggestions
+              <span id="sg-badge" class="sg-badge hidden">0</span>
+            </button>
+            <div id="sg-dropdown" class="sg-dropdown hidden">
+              <button class="sg-dropdown-item" id="btn-sg-request">✨ Feature Request</button>
+              <button class="sg-dropdown-item" id="btn-sg-error">🐛 Report an Error</button>
+              <button class="sg-dropdown-item" id="btn-sg-mine">📨 My Submissions</button>
+              <div class="sg-dropdown-sep hidden" id="sg-admin-sep"></div>
+              <button class="sg-dropdown-item sg-admin-item hidden" id="btn-sg-inbox">📥 All Submissions</button>
+            </div>
+          </div>
+          <button id="btn-save" class="btn-ghost btn-sm" title="Save (Ctrl+S)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save
+          </button>
+          <span id="save-status" class="save-status"></span>
+        </div>
+      </div>
+
+      <!-- Run Toolbar -->
+      <div class="editor-toolbar">
+        <div class="toolbar-left">
+          <button id="btn-run" class="btn-run" title="Run (F5)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Run
+          </button>
+          <button id="btn-debug" class="btn-debug" title="Debug (F6)">
+            <!-- Bug icon -->
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M8 2l1.5 1.5"/>
+              <path d="M14.5 3.5L16 2"/>
+              <path d="M9 7.5A3 3 0 0 1 15 7.5"/>
+              <path d="M12 10.5v6"/>
+              <path d="M9 10.5H6a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h3"/>
+              <path d="M15 10.5h3a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-3"/>
+              <path d="M7 7.5l-3-2"/>
+              <path d="M17 7.5l3-2"/>
+              <path d="M7 19.5l-2 2"/>
+              <path d="M17 19.5l2 2"/>
+              <rect x="9" y="7" width="6" height="14" rx="3"/>
+            </svg>
+            Debug
+          </button>
+          <div class="toolbar-sep"></div>
+          <button id="btn-step" class="btn-debug-ctrl hidden" title="Step (F10)" disabled>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 19 12"/><polyline points="12 5 19 12 12 19"/></svg>
+            Step
+          </button>
+          <button id="btn-continue" class="btn-debug-ctrl hidden" title="Continue (F5)" disabled>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Continue
+          </button>
+          <button id="btn-stop" class="btn-stop hidden" title="Stop (Esc)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18"/></svg>
+            Stop
+          </button>
+          <div class="toolbar-sep"></div>
+          <button id="btn-clear-breakpoints" class="btn-ghost btn-sm" title="Clear all breakpoints">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>
+            Breakpoints
+          </button>
+        </div>
+      </div>
+
+      <!-- Challenge row: description panel + permanent side actions -->
+      <div class="ch-row">
+        <div id="challenge-panel" class="challenge-panel hidden">
+          <div class="ch-panel-header">
+            <div class="ch-panel-title-row">
+              <span id="ch-panel-title" class="ch-panel-title">Challenge</span>
+              <span id="ch-panel-badge" class="ch-difficulty-badge badge-easy">Easy</span>
+            </div>
+            <div class="ch-panel-actions">
+              <button id="btn-close-challenge" class="btn-ghost btn-sm" title="Close challenge">✕</button>
+            </div>
+          </div>
+          <div id="ch-panel-body" class="ch-panel-body"></div>
+          <div id="ch-test-results" class="ch-test-results"></div>
+        </div>
+      </div>
+
+      <!-- Editor + Debug side panel -->
+      <div class="editor-debug-row">
+
+        <!-- Code Editor -->
+        <div class="code-editor-wrap" id="code-editor-wrap">
+          <div class="editor-container">
+            <div class="editor-gutter" id="editor-gutter"></div>
+            <div class="editor-inner">
+              <div class="editor-highlight" id="editor-highlight" aria-hidden="true"></div>
+              <textarea
+                id="code-editor"
+                class="editor-textarea"
+                spellcheck="false"
+                autocorrect="off"
+                autocapitalize="off"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Debug Panel (variable watch) -->
+        <div class="debug-side-panel hidden" id="debug-side-panel">
+          <div class="debug-section">
+            <div class="debug-section-title">Variables</div>
+            <div id="variable-watch" class="variable-watch">
+              <div class="watch-empty">No variables yet.<br>Run in debug mode.</div>
+            </div>
+          </div>
+          <div class="debug-section">
+            <div class="debug-section-title">Execution</div>
+            <div class="exec-info">
+              <div class="exec-row"><span>Line:</span><span id="debug-current-line">—</span></div>
+              <div class="exec-row"><span>Status:</span><span id="debug-status">Idle</span></div>
+              <div class="exec-row"><span>Steps:</span><span id="debug-steps">0</span></div>
+            </div>
+          </div>
+          <div class="debug-section">
+            <div class="debug-section-title">Virtual Files</div>
+            <div id="virtual-files" class="virtual-files">
+              <div class="watch-empty">No open files.</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end editor-debug-row -->
+
+      <!-- Panel Resize Handle -->
+      <div class="panel-resize-handle" id="panel-resize-handle" title="Drag to resize panel"></div>
+
+      <!-- Output Panel -->
+      <div class="output-panel" id="output-panel">
+        <img src="assets/winston.png" class="console-robot" alt="CGA Winston" aria-hidden="true">
+        <div class="output-tabs">
+          <button class="output-tab active" data-panel="console">Console</button>
+          <button class="output-tab" data-panel="errors">Problems <span id="error-badge" class="badge hidden">0</span></button>
+          <button class="output-tab" data-panel="files">Files</button>
+          <button id="btn-clear-output" class="btn-ghost btn-sm output-clear">Clear</button>
+        </div>
+        <div class="output-content" id="output-console">
+          <div class="output-placeholder">Program output will appear here…</div>
+        </div>
+        <div class="output-content hidden" id="output-errors">
+          <div class="output-placeholder">No problems.</div>
+        </div>
+        <div class="output-content hidden" id="output-files">
+          <div class="output-placeholder">Virtual file system contents will appear here after WRITEFILE operations.</div>
+        </div>
+      </div>
+
+    </main><!-- end editor-main -->
+
+    <!-- ── Pseudocode Reference Panel ── -->
+    <aside id="ref-panel" class="ref-panel ref-panel--open">
+      <div class="ref-panel-header">
+        <span class="ref-panel-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Pseudocode Reference
+        </span>
+        <button id="btn-close-ref" class="ref-collapse-btn" title="Hide reference panel">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+      <div class="ref-panel-body">
+        <p class="ref-intro">Cambridge AS &amp; A Level Computer Science 9618 pseudocode conventions.</p>
+
+        <!-- Comments -->
+        <details class="ref-section" open>
+          <summary class="ref-section-title">Comments</summary>
+          <div class="ref-section-body">
+            <pre class="ref-code">// This is a comment</pre>
+            <p class="ref-note">Comments are ignored by the interpreter. Use them to explain your code.</p>
+          </div>
+        </details>
+
+        <!-- Data Types -->
+        <details class="ref-section">
+          <summary class="ref-section-title">Data Types</summary>
+          <div class="ref-section-body">
+            <table class="ref-table">
+              <tr><td><code>INTEGER</code></td><td>Whole numbers, e.g. <code>42</code>, <code>-7</code></td></tr>
+              <tr><td><code>REAL</code></td><td>Decimals, e.g. <code>3.14</code></td></tr>
+              <tr><td><code>CHAR</code></td><td>Single character, e.g. <code>'A'</code></td></tr>
+              <tr><td><code>STRING</code></td><td>Text, e.g. <code>"Hello"</code></td></tr>
+              <tr><td><code>BOOLEAN</code></td><td><code>TRUE</code> or <code>FALSE</code></td></tr>
+              <tr><td><code>DATE</code></td><td>e.g. <code>28/03/26</code></td></tr>
+            </table>
+          </div>
+        </details>
+
+        <!-- Variables & Constants -->
+        <details class="ref-section">
+          <summary class="ref-section-title">Variables &amp; Constants</summary>
+          <div class="ref-section-body">
+            <p class="ref-label">Declare a variable:</p>
+            <pre class="ref-code">DECLARE Count : INTEGER
+DECLARE Score : REAL
+DECLARE UserName : STRING
+DECLARE IsValid : BOOLEAN</pre>
+            <p class="ref-label">Declare a constant:</p>
+            <pre class="ref-code">CONSTANT PI = 3.14159
+CONSTANT MAX_SIZE = 100</pre>
+            <p class="ref-label">Assignment (use the ← arrow):</p>
+            <pre class="ref-code">Count ← 0
+Score ← Score + 1</pre>
+            <p class="ref-note">Variable, array, procedure and function names begin with a capital letter. Constants are full caps with SNAKE_CASE.</p>
+          </div>
+        </details>
+
+        <!-- Input & Output -->
+        <details class="ref-section">
+          <summary class="ref-section-title">Input &amp; Output</summary>
+          <div class="ref-section-body">
+            <pre class="ref-code">INPUT UserName
+
+OUTPUT "Text"
+OUTPUT Score
+OUTPUT "Score = ", Score
+OUTPUT "Sum = ", NumA + NumB</pre>
+            <p class="ref-note">OUTPUT can combine multiple values separated by commas.</p>
+          </div>
+        </details>
+
+        <!-- Operators -->
+        <details class="ref-section">
+          <summary class="ref-section-title">Operators</summary>
+          <div class="ref-section-body">
+            <p class="ref-label">Arithmetic:</p>
+            <table class="ref-table">
+              <tr><td><code>+</code></td><td>Addition</td></tr>
+              <tr><td><code>-</code></td><td>Subtraction</td></tr>
+              <tr><td><code>*</code></td><td>Multiplication</td></tr>
+              <tr><td><code>/</code></td><td>Division (real result)</td></tr>
+              <tr><td><code>DIV</code></td><td>Integer division</td></tr>
+              <tr><td><code>MOD</code></td><td>Remainder</td></tr>
+              <tr><td><code>^</code></td><td>Power / exponent</td></tr>
+            </table>
+            <p class="ref-label">Comparison:</p>
+            <table class="ref-table">
+              <tr><td><code>=</code></td><td>Equal to</td></tr>
+              <tr><td><code>&lt;&gt;</code></td><td>Not equal to</td></tr>
+              <tr><td><code>&lt;</code></td><td>Less than</td></tr>
+              <tr><td><code>&gt;</code></td><td>Greater than</td></tr>
+              <tr><td><code>&lt;=</code></td><td>Less than or equal</td></tr>
+              <tr><td><code>&gt;=</code></td><td>Greater than or equal</td></tr>
+            </table>
+            <p class="ref-label">Logical:</p>
+            <table class="ref-table">
+              <tr><td><code>AND</code></td><td>Both conditions true</td></tr>
+              <tr><td><code>OR</code></td><td>Either condition true</td></tr>
+              <tr><td><code>NOT</code></td><td>Negates a condition</td></tr>
+            </table>
+            <p class="ref-label">String:</p>
+            <table class="ref-table">
+              <tr><td><code>&amp;</code></td><td>Concatenation: <code>"Hi" &amp; UserName</code></td></tr>
+            </table>
+          </div>
+        </details>
+
+        <!-- Selection: IF -->
+        <details class="ref-section">
+          <summary class="ref-section-title">Selection — IF</summary>
+          <div class="ref-section-body">
+            <pre class="ref-code">IF condition
+   THEN
+      statements
+ENDIF
+
+IF condition
+   THEN
+      statements
+   ELSE
+      statements
+ENDIF</pre>
+            <p class="ref-label">Example:</p>
+            <pre class="ref-code">IF Score >= 50
+   THEN
+      OUTPUT "Pass"
+   ELSE
+      OUTPUT "Fail"
+ENDIF</pre>
+            <p class="ref-note">Nested IF statements are allowed. Always close with ENDIF.</p>
+          </div>
+        </details>
+
+        <!-- Selection: CASE -->
+        <details class="ref-section">
+          <summary class="ref-section-title">Selection — CASE</summary>
+          <div class="ref-section-body">
+            <pre class="ref-code">CASE OF Variable
+   value1 : statement
+   value2 : statement
+   OTHERWISE : statement
+ENDCASE</pre>
+            <p class="ref-label">Example:</p>
+            <pre class="ref-code">CASE OF Grade
+   "A" : OUTPUT "Excellent"
+   "B" : OUTPUT "Good"
+   "C" : OUTPUT "Average"
+   OTHERWISE : OUTPUT "Below average"
+ENDCASE</pre>
+            <p class="ref-note">OTHERWISE is optional but good practice. Use for simple value matching.</p>
+          </div>
+        </details>
+
+        <!-- Iteration: FOR -->
+        <details class="ref-section">
+          <summary class="ref-section-title">Iteration — FOR</summary>
+          <div class="ref-section-body">
+            <pre class="ref-code">FOR Counter ← start TO finish
+   statements
+NEXT Counter
+
+FOR Counter ← start TO finish STEP n
+   statements
+NEXT Counter</pre>
+            <p class="ref-label">Example — count up:</p>
+            <pre class="ref-code">FOR Counter ← 1 TO 5
+   OUTPUT Counter
+NEXT Counter</pre>
+            <p class="ref-label">Example — count down in twos:</p>
+            <pre class="ref-code">FOR Counter ← 10 TO 0 STEP -2
+   OUTPUT Counter
+NEXT Counter</pre>
+            <p class="ref-note">Use FOR when the number of iterations is known in advance.</p>
+          </div>
+        </details>
+
+        <!-- Iteration: WHILE -->
+        <details class="ref-section">
+          <summary class="ref-section-title">Iteration — WHILE</summary>
+          <div class="ref-section-body">
+            <pre class="ref-code">WHILE condition
+   statements
+ENDWHILE</pre>
+            <p class="ref-label">Example:</p>
+            <pre class="ref-code">DECLARE Count : INTEGER
+Count ← 1
+WHILE Count <= 10
+   OUTPUT Count
+   Count ← Count + 1
+ENDWHILE</pre>
+            <p class="ref-note">The condition is checked <strong>before</strong> each iteration. The loop body may never execute if the condition starts false. Note: no <code>DO</code> keyword in 9618 pseudocode.</p>
+          </div>
+        </details>
+
+        <!-- Iteration: REPEAT -->
+        <details class="ref-section">
+          <summary class="ref-section-title">Iteration — REPEAT</summary>
+          <div class="ref-section-body">
+            <pre class="ref-code">REPEAT
+   statements
+UNTIL condition</pre>
+            <p class="ref-label">Example — input validation:</p>
+            <pre class="ref-code">REPEAT
+   INPUT Age
+UNTIL Age >= 0 AND Age <= 120</pre>
+            <p class="ref-note">The condition is checked <strong>after</strong> each iteration. The loop body always runs at least once.</p>
+          </div>
+        </details>
+
+        <!-- Arrays -->
+        <details class="ref-section">
+          <summary class="ref-section-title">Arrays</summary>
+          <div class="ref-section-body">
+            <p class="ref-label">1D array — declare and use:</p>
+            <pre class="ref-code">DECLARE Scores : ARRAY[1:10] OF INTEGER
+Scores[1] ← 85
+Scores[2] ← 92
+OUTPUT Scores[1]</pre>
+            <p class="ref-label">2D array — declare and use:</p>
+            <pre class="ref-code">DECLARE Grid : ARRAY[1:3, 1:3] OF INTEGER
+Grid[1,1] ← 0
+Grid[2,3] ← 7
+OUTPUT Grid[2,3]</pre>
+            <p class="ref-label">Loop through an array:</p>
+            <pre class="ref-code">DECLARE Total : INTEGER
+Total ← 0
+FOR Counter ← 1 TO 10
+   Total ← Total + Scores[Counter]
+NEXT Counter</pre>
+            <p class="ref-note">Array indices start at the lower bound you declare (often 1, sometimes 0).</p>
+          </div>
+        </details>
+
+        <!-- Records -->
+        <details class="ref-section">
+          <summary class="ref-section-title">Records (User-defined Types)</summary>
+          <div class="ref-section-body">
+            <p class="ref-label">Define a record type:</p>
+            <pre class="ref-code">TYPE StudentRecord
+   DECLARE LastName : STRING
+   DECLARE FirstName : STRING
+   DECLARE DateOfBirth : DATE
+   DECLARE YearGroup : INTEGER
+   DECLARE FormGroup : CHAR
+ENDTYPE</pre>
+            <p class="ref-label">Declare variables of that type:</p>
+            <pre class="ref-code">DECLARE Pupil1 : StudentRecord
+DECLARE Pupil2 : StudentRecord
+DECLARE Form : ARRAY[1:30] OF StudentRecord</pre>
+            <p class="ref-label">Access fields with dot notation:</p>
+            <pre class="ref-code">Pupil1.LastName ← "Johnson"
+Pupil1.FirstName ← "Leroy"
+Pupil1.YearGroup ← 6
+Pupil1.FormGroup ← 'A'
+
+// Copy one record to another
+Pupil2 ← Pupil1
+
+// Access a field in an array of records
+Form[1].YearGroup ← Form[1].YearGroup + 1</pre>
+            <p class="ref-label">Pass a record to a procedure:</p>
+            <pre class="ref-code">PROCEDURE PrintStudent(S : StudentRecord)
+   OUTPUT S.FirstName, " ", S.LastName
+ENDPROCEDURE
+
+CALL PrintStudent(Pupil1)</pre>
+            <p class="ref-note">Record types are defined with <code>TYPE...ENDTYPE</code>. Fields are accessed using dot notation. Records can be stored in arrays and passed as parameters.</p>
+          </div>
+        </details>
+
+        <!-- Procedures -->
+        <details class="ref-section">
+          <summary class="ref-section-title">Procedures &amp; Parameter Passing</summary>
+          <div class="ref-section-body">
+            <p class="ref-label">No parameters:</p>
+            <pre class="ref-code">PROCEDURE ShowMenu()
+   OUTPUT "1. Start"
+   OUTPUT "2. Quit"
+ENDPROCEDURE
+
+CALL ShowMenu()</pre>
+            <p class="ref-label">Pass by value (BYVAL — default):</p>
+            <pre class="ref-code">PROCEDURE PrintDouble(BYVAL Num : INTEGER)
+   Num ← Num * 2      // only changes the local copy
+   OUTPUT Num
+ENDPROCEDURE
+
+DECLARE Score : INTEGER
+Score ← 5
+CALL PrintDouble(Score)
+OUTPUT Score   // still 5 — original unchanged</pre>
+            <p class="ref-label">Pass by reference (BYREF — modifies original):</p>
+            <pre class="ref-code">PROCEDURE Swap(BYREF X : INTEGER, Y : INTEGER)
+   DECLARE Temp : INTEGER
+   Temp ← X
+   X ← Y
+   Y ← Temp
+ENDPROCEDURE
+
+DECLARE A : INTEGER
+DECLARE B : INTEGER
+A ← 10
+B ← 20
+CALL Swap(A, B)
+OUTPUT A, " ", B   // 20 10</pre>
+            <p class="ref-label">Multiple parameter types:</p>
+            <pre class="ref-code">PROCEDURE UpdateRecord(BYREF S : StudentRecord,
+                       BYVAL NewYear : INTEGER)
+   S.YearGroup ← NewYear
+ENDPROCEDURE</pre>
+            <p class="ref-note">If no keyword is given, <strong>BYVAL is assumed</strong>. BYREF is needed when the procedure must change the caller's variable. The BYREF/BYVAL keyword applies to all following parameters until another keyword appears.</p>
+          </div>
+        </details>
+
+        <!-- Functions -->
+        <details class="ref-section">
+          <summary class="ref-section-title">Functions</summary>
+          <div class="ref-section-body">
+            <p class="ref-label">Define and use:</p>
+            <pre class="ref-code">FUNCTION Max(Number1 : INTEGER, Number2 : INTEGER)
+            RETURNS INTEGER
+   IF Number1 > Number2 THEN
+      RETURN Number1
+   ELSE
+      RETURN Number2
+   ENDIF
+ENDFUNCTION
+
+// Call inside an expression — no CALL keyword
+OUTPUT "Penalty Fine = ", Max(10, Distance * 2)
+
+DECLARE Best : INTEGER
+Best ← Max(Score1, Score2)</pre>
+            <p class="ref-label">No-parameter function:</p>
+            <pre class="ref-code">FUNCTION GetGrade() RETURNS CHAR
+   DECLARE Mark : INTEGER
+   INPUT Mark
+   IF Mark >= 70 THEN
+      RETURN 'A'
+   ELSE
+      RETURN 'B'
+   ENDIF
+ENDFUNCTION
+
+OUTPUT "Grade: ", GetGrade()</pre>
+            <p class="ref-label">String-returning function:</p>
+            <pre class="ref-code">FUNCTION Classify(Score : INTEGER) RETURNS STRING
+   IF Score >= 50 THEN
+      RETURN "Pass"
+   ELSE
+      RETURN "Fail"
+   ENDIF
+ENDFUNCTION</pre>
+            <p class="ref-note">Functions return a single value with <code>RETURN</code>. Use them inside expressions — <strong>never</strong> with <code>CALL</code>. Parameters should not be passed <code>BYREF</code> to a function.</p>
+          </div>
+        </details>
+
+        <!-- String Operations -->
+        <details class="ref-section">
+          <summary class="ref-section-title">String Operations</summary>
+          <div class="ref-section-body">
+            <table class="ref-table">
+              <tr><td><code>LENGTH(s)</code></td><td>Returns INTEGER — number of characters in string <code>s</code></td></tr>
+              <tr><td><code>MID(s, x, y)</code></td><td>Returns STRING — <code>y</code> characters from position <code>x</code> (1-indexed)</td></tr>
+              <tr><td><code>RIGHT(s, x)</code></td><td>Returns STRING — rightmost <code>x</code> characters of <code>s</code></td></tr>
+              <tr><td><code>LCASE(c)</code></td><td>Returns CHAR — lower-case equivalent of character <code>c</code></td></tr>
+              <tr><td><code>UCASE(c)</code></td><td>Returns CHAR — upper-case equivalent of character <code>c</code></td></tr>
+            </table>
+            <p class="ref-label">Examples:</p>
+            <pre class="ref-code">DECLARE Word : STRING
+Word ← "Cambridge"
+OUTPUT LENGTH(Word)        // 9
+OUTPUT MID(Word, 1, 3)     // Cam
+OUTPUT MID(Word, 5, 6)     // bridge
+OUTPUT RIGHT(Word, 5)      // ridge</pre>
+            <p class="ref-label">LCASE / UCASE operate on a single CHAR:</p>
+            <pre class="ref-code">DECLARE Ch : CHAR
+Ch ← 'W'
+OUTPUT LCASE(Ch)   // 'w'
+OUTPUT UCASE('h')  // 'H'</pre>
+            <p class="ref-label">Concatenation with &amp; (joins strings):</p>
+            <pre class="ref-code">DECLARE Full : STRING
+Full ← "Summer" & " " & "Pudding"
+OUTPUT Full   // Summer Pudding</pre>
+            <p class="ref-note">String functions will always be provided in exams. LCASE/UCASE accept a CHAR, not a full STRING.</p>
+          </div>
+        </details>
+
+        <!-- Type Conversion -->
+        <details class="ref-section">
+          <summary class="ref-section-title">Type Conversion</summary>
+          <div class="ref-section-body">
+            <table class="ref-table">
+              <tr><td><code>STR_TO_NUM(s)</code></td><td>Converts STRING <code>s</code> to a numeric value (INTEGER or REAL)</td></tr>
+              <tr><td><code>NUM_TO_STR(n)</code></td><td>Converts a numeric value <code>n</code> to a STRING</td></tr>
+            </table>
+            <p class="ref-label">Examples:</p>
+            <pre class="ref-code">DECLARE AgeStr : STRING
+DECLARE Age : INTEGER
+AgeStr ← "17"
+Age ← STR_TO_NUM(AgeStr)   // Age = 17
+OUTPUT Age + 1              // 18
+
+DECLARE Score : INTEGER
+DECLARE ScoreStr : STRING
+Score ← 95
+ScoreStr ← NUM_TO_STR(Score)
+OUTPUT "Score: " & ScoreStr  // Score: 95</pre>
+            <p class="ref-label">Useful when reading CSV data from files:</p>
+            <pre class="ref-code">// CSV line: "Alice,85"
+// after parsing the second field as a string:
+Mark ← STR_TO_NUM(Field2)</pre>
+            <p class="ref-note">Type conversion is needed when data read from a file (always a STRING) must be used in arithmetic. <code>STR_TO_NUM</code> will cause an error if the string is not a valid number.</p>
+          </div>
+        </details>
+
+        <!-- Numeric Functions -->
+        <details class="ref-section">
+          <summary class="ref-section-title">Numeric Functions</summary>
+          <div class="ref-section-body">
+            <table class="ref-table">
+              <tr><td><code>INT(x)</code></td><td>Returns INTEGER — truncates (drops) the fractional part of REAL <code>x</code></td></tr>
+              <tr><td><code>RAND(x)</code></td><td>Returns REAL — random number in range 0 to <code>x</code> (exclusive)</td></tr>
+              <tr><td><code>x DIV y</code></td><td>Integer division — whole number quotient</td></tr>
+              <tr><td><code>x MOD y</code></td><td>Remainder after integer division</td></tr>
+            </table>
+            <p class="ref-label">Examples:</p>
+            <pre class="ref-code">OUTPUT INT(27.5415)  // 27  (not rounded — truncated)
+OUTPUT INT(-3.9)     // -3
+OUTPUT RAND(87)      // e.g. 35.43  (0 ≤ result < 87)
+OUTPUT 17 DIV 5      // 3
+OUTPUT 17 MOD 5      // 2</pre>
+            <p class="ref-note"><code>INT()</code> truncates towards zero — it does not round. <code>RAND(x)</code> returns a REAL, not an INTEGER.</p>
+          </div>
+        </details>
+
+        <!-- File Handling -->
+        <details class="ref-section">
+          <summary class="ref-section-title">File Handling</summary>
+          <div class="ref-section-body">
+            <table class="ref-table">
+              <tr><td><code>OPENFILE f FOR READ</code></td><td>Open for reading</td></tr>
+              <tr><td><code>OPENFILE f FOR WRITE</code></td><td>Open for writing (overwrites existing)</td></tr>
+              <tr><td><code>OPENFILE f FOR APPEND</code></td><td>Open and add to end</td></tr>
+              <tr><td><code>READFILE f, v</code></td><td>Read next line into STRING variable <code>v</code></td></tr>
+              <tr><td><code>WRITEFILE f, data</code></td><td>Write <code>data</code> as a line</td></tr>
+              <tr><td><code>CLOSEFILE f</code></td><td>Close the file</td></tr>
+              <tr><td><code>EOF(f)</code></td><td>Returns TRUE if at end of file</td></tr>
+            </table>
+            <p class="ref-label">Write to a file:</p>
+            <pre class="ref-code">OPENFILE "data.txt" FOR WRITE
+WRITEFILE "data.txt", "Alice,85,TRUE"
+WRITEFILE "data.txt", "Bob,72,FALSE"
+CLOSEFILE "data.txt"</pre>
+            <p class="ref-label">Read from a file:</p>
+            <pre class="ref-code">DECLARE Line : STRING
+OPENFILE "data.txt" FOR READ
+WHILE NOT EOF("data.txt")
+   READFILE "data.txt", Line
+   OUTPUT Line
+ENDWHILE
+CLOSEFILE "data.txt"</pre>
+            <p class="ref-label">Comma-separated values (CSV) — reading fields:</p>
+            <pre class="ref-code">// Each line is a STRING: "Alice,85,TRUE"
+// Split fields by finding commas manually using MID and LENGTH,
+// or use a helper function provided in the question.
+DECLARE Line : STRING
+DECLARE Name : STRING
+DECLARE Score : INTEGER
+DECLARE Pos1 : INTEGER
+DECLARE Pos2 : INTEGER
+
+OPENFILE "students.csv" FOR READ
+WHILE NOT EOF("students.csv")
+   READFILE "students.csv", Line
+   // find first comma position
+   Pos1 ← 1
+   WHILE MID(Line, Pos1, 1) <> ","
+      Pos1 ← Pos1 + 1
+   ENDWHILE
+   Name ← MID(Line, 1, Pos1 - 1)
+   // remaining fields follow after Pos1
+   OUTPUT Name
+ENDWHILE
+CLOSEFILE "students.csv"</pre>
+            <p class="ref-note">CSV files store each record as a line of comma-separated values. READFILE reads one line at a time as a STRING. Parse fields using <code>MID</code> and <code>LENGTH</code>. In exams, a helper function to split fields will usually be provided.</p>
+          </div>
+        </details>
+
+
+        <!-- Quick Syntax Checklist -->
+        <details class="ref-section">
+          <summary class="ref-section-title">Quick Syntax Checklist</summary>
+          <div class="ref-section-body">
+            <ul class="ref-checklist">
+              <li>Every <code>IF</code> needs <code>ENDIF</code></li>
+              <li>Every <code>WHILE</code> needs <code>ENDWHILE</code> — no <code>DO</code></li>
+              <li>Every <code>FOR</code> needs <code>NEXT</code></li>
+              <li>Every <code>REPEAT</code> needs <code>UNTIL</code></li>
+              <li>Every <code>CASE OF</code> needs <code>ENDCASE</code></li>
+              <li>Every <code>PROCEDURE</code> needs <code>ENDPROCEDURE</code></li>
+              <li>Every <code>FUNCTION</code> needs <code>ENDFUNCTION</code></li>
+              <li>Every <code>TYPE</code> (record) needs <code>ENDTYPE</code></li>
+              <li>Call procedures with <code>CALL</code>; call functions without it</li>
+              <li>Parameters are <code>BYVAL</code> by default; use <code>BYREF</code> to modify original</li>
+              <li><code>LCASE</code> / <code>UCASE</code> take a <code>CHAR</code>, not a full string</li>
+              <li><code>INT(x)</code> truncates; it does not round</li>
+              <li>Use <code>←</code> for assignment, not <code>=</code></li>
+              <li>Use <code>=</code> only for comparison (in conditions)</li>
+              <li>Declare variables before using them</li>
+              <li>Strings use double quotes <code>"text"</code></li>
+              <li>Characters use single quotes <code>'A'</code></li>
+            </ul>
+          </div>
+        </details>
+
+      </div><!-- end ref-panel-body -->
+    </aside>
+
+  </div><!-- end app-body -->
+
+  <!-- ── Status Bar ── -->
+  <div class="status-bar">
+    <div class="status-left">
+      <span class="status-item" id="status-line-col">Ln 1, Col 1</span>
+      <span class="status-sep"></span>
+      <span class="status-item" id="status-exec-state"></span>
+    </div>
+    <span class="status-cga">Crimson Global Academy - Cambridge AS Level Computer Science 9618</span>
+    <div class="status-right">
+      <button id="btn-explorer" class="status-btn" title="Toggle Explorer panel">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Explorer
+      </button>
+      <span class="status-sep"></span>
+      <button id="btn-ref-panel" class="status-btn" title="Toggle pseudocode reference">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Reference
+      </button>
+      <span class="status-sep"></span>
+      <button id="btn-font" class="status-btn" title="Toggle dyslexia-friendly font">Aa</button>
+      <span class="status-sep"></span>
+      <button id="btn-theme" class="status-btn" title="Toggle theme">
+        <svg id="theme-icon-dark" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg id="theme-icon-light" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="hidden"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <span id="theme-label">Light</span>
+      </button>
+      <span class="status-sep"></span>
+      <button id="btn-class-code" class="status-btn student-only hidden" title="Change class code">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Class: <span id="status-class-code">—</span>
+      </button>
+    </div>
+  </div>
+
+</div><!-- end #app -->
+
+<!-- ═══════════════════ CHANGE CLASS CODE MODAL ═══════════════════ -->
+<div id="class-modal" class="modal-overlay hidden">
+  <div class="modal-card">
+    <div class="modal-title">Change Class Code</div>
+    <p class="modal-text">Enter the class code your teacher gave you. This lets your teacher see your progress in their dashboard.</p>
+    <input type="text" id="class-input" class="modal-input" placeholder="e.g. CS9A-2025">
+    <div class="modal-actions">
+      <button id="class-cancel" class="btn-ghost">Cancel</button>
+      <button id="class-confirm" class="btn-primary">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ RENAME MODAL ═══════════════════ -->
+<div id="rename-modal" class="modal-overlay hidden">
+  <div class="modal-card">
+    <div class="modal-title">Rename Program</div>
+    <input type="text" id="rename-input" class="modal-input" placeholder="Program name…">
+    <div class="modal-actions">
+      <button id="rename-cancel" class="btn-ghost">Cancel</button>
+      <button id="rename-confirm" class="btn-primary">Rename</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SUGGESTIONS MODALS ═══════════════════ -->
+
+<!-- Feature Request -->
+<div id="sg-modal-request" class="sg-modal hidden">
+  <div class="sg-card sg-card--form">
+    <div class="sg-card-header">
+      <span class="sg-card-title">✨ Feature Request</span>
+      <button class="sg-close-btn" id="sg-req-cancel">✕</button>
+    </div>
+    <div class="sg-card-body">
+      <label class="sg-label" for="sg-req-text">Describe your idea or request</label>
+      <textarea id="sg-req-text" class="sg-textarea" rows="5" placeholder="I would like to see…"></textarea>
+    </div>
+    <div class="sg-card-footer">
+      <span id="sg-req-status" class="sg-status hidden"></span>
+      <button class="btn-ghost btn-sm" id="sg-req-cancel-2">Cancel</button>
+      <button class="btn-accent btn-sm" id="sg-req-submit">Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Error Report -->
+<div id="sg-modal-error" class="sg-modal hidden">
+  <div class="sg-card sg-card--form">
+    <div class="sg-card-header">
+      <span class="sg-card-title">🐛 Report an Error</span>
+      <button class="sg-close-btn" id="sg-err-cancel">✕</button>
+    </div>
+    <div class="sg-card-body">
+      <div>
+        <label class="sg-label" for="sg-exercise-sel">Challenge (optional)</label>
+        <select id="sg-exercise-sel" class="sg-select"></select>
+      </div>
+      <div>
+        <label class="sg-label" for="sg-err-text">Describe the error</label>
+        <textarea id="sg-err-text" class="sg-textarea" rows="5" placeholder="When I run… the output was… but I expected…"></textarea>
+      </div>
+    </div>
+    <div class="sg-card-footer">
+      <span id="sg-err-status" class="sg-status hidden"></span>
+      <button class="btn-ghost btn-sm" id="sg-err-cancel-2">Cancel</button>
+      <button class="btn-accent btn-sm" id="sg-err-submit">Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Inbox (admin) / My Submissions (regular user) -->
+<div id="sg-modal-inbox" class="sg-modal hidden">
+  <div class="sg-card sg-card--inbox">
+    <div class="sg-card-header">
+      <span class="sg-card-title" id="sg-inbox-title">Submissions</span>
+      <button class="sg-close-btn" id="sg-inbox-close">✕</button>
+    </div>
+    <div class="sg-filters hidden" id="sg-filters">
+      <button class="sg-filter-btn active" data-f="all">All</button>
+      <button class="sg-filter-btn" data-f="new">New</button>
+      <button class="sg-filter-btn" data-f="request">Requests</button>
+      <button class="sg-filter-btn" data-f="error">Errors</button>
+      <button class="sg-filter-btn" data-f="replied">Replied</button>
+    </div>
+    <div class="sg-inbox-body" id="sg-inbox-list">
+      <div class="sg-loading">Loading…</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ TEACHER DASHBOARD ═══════════════════ -->
+<div id="teacher-dashboard" class="dashboard-overlay hidden">
+  <div class="dashboard-container">
+    <div class="dashboard-header">
+      <h2 class="dashboard-title">Teacher Dashboard</h2>
+      <button id="btn-revalidate" class="dash-theme-btn" title="Re-run all students' saved code against the current test cases and remove any completions that no longer pass">&#10003; Re-validate submissions</button>
+      <span id="revalidate-status" style="font-size:12px;color:var(--db-text2);"></span>
+      <button id="btn-dash-theme" class="dash-theme-btn">&#9788; Light</button>
+      <button id="btn-close-dashboard" class="btn-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="dashboard-grid" id="dashboard-grid">
+
+      <!-- Class Overview -->
+      <div class="dash-card span-2">
+        <div class="dash-card-title">Class Overview</div>
+        <div class="dash-stats-row">
+          <div class="dash-stat"><div class="dash-stat-val" id="stat-students">—</div><div class="dash-stat-label">Students</div></div>
+          <div class="dash-stat"><div class="dash-stat-val" id="stat-programs">—</div><div class="dash-stat-label">Programs</div></div>
+          <div class="dash-stat"><div class="dash-stat-val" id="stat-runs">—</div><div class="dash-stat-label">Total Runs</div></div>
+          <div class="dash-stat"><div class="dash-stat-val" id="stat-success-rate">—</div><div class="dash-stat-label">Success Rate</div></div>
+        </div>
+      </div>
+
+      <!-- Student List -->
+      <div class="dash-card span-2">
+        <div class="dash-card-title">Students</div>
+        <div class="dash-table-wrap">
+          <table class="dash-table" id="student-table">
+            <thead>
+              <tr>
+                <th>Name</th><th>Programs</th><th>Runs</th><th>Errors</th><th>Success %</th><th>Last Active</th><th>Skills</th>
+              </tr>
+            </thead>
+            <tbody id="student-table-body">
+              <tr><td colspan="7" class="table-empty">Loading students…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Feature Usage -->
+      <div class="dash-card">
+        <div class="dash-card-title">Feature Adoption</div>
+        <canvas id="chart-features" width="340" height="220"></canvas>
+      </div>
+
+      <!-- Error Distribution -->
+      <div class="dash-card">
+        <div class="dash-card-title">Common Error Types</div>
+        <canvas id="chart-errors" width="340" height="220"></canvas>
+      </div>
+
+      <!-- Computational Thinking Skills -->
+      <div class="dash-card span-2">
+        <div class="dash-card-title">Computational Thinking Indicators</div>
+        <div id="skills-matrix" class="skills-matrix"></div>
+      </div>
+
+    </div><!-- end dashboard-grid -->
+  </div>
+</div>
+
+<!-- Leaderboard modal -->
+<div id="leaderboard-modal" class="modal-overlay hidden">
+  <div class="modal-card lb-modal-card">
+    <div class="lb-modal-header">
+      <span class="lb-modal-title">🏆 Class Leaderboard</span>
+      <button id="btn-close-leaderboard" class="lb-close-btn" title="Close">✕</button>
+    </div>
+    <div id="leaderboard-body" class="lb-body"></div>
+  </div>
+</div>
+
+<!-- XP toast (bottom-right) -->
+<div id="xp-toast" class="toast xp-toast hidden"></div>
+
+<!-- Badge toast (bottom-right, above XP toast) -->
+<div id="badge-toast" class="toast badge-toast hidden"></div>
+
+<!-- ═══════════════════ PASSWORD RESET MODAL ═══════════════════ -->
+<div id="reset-panel" class="reset-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="reset-panel-title">
+  <div class="reset-modal-box">
+    <h3 class="reset-panel-title" id="reset-panel-title">Reset Password</h3>
+    <p class="reset-panel-hint">Enter your school email and we'll send you a reset link.</p>
+    <div class="form-group">
+      <input type="email" id="reset-email" placeholder="name@cga.school" autocomplete="email">
+    </div>
+    <div id="reset-error" class="auth-error hidden"></div>
+    <div class="reset-panel-actions">
+      <button type="button" class="btn-primary" id="reset-submit-btn">Send Reset Email</button>
+      <button type="button" class="btn-ghost" id="reset-cancel-btn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SCRIPTS ═══════════════════ -->
+<script type="module" src="scripts/app.js"></script>
+
+</body>
+</html>

@@ -91,14 +91,12 @@ export async function updateUserClassCode(uid, classCode) {
 export async function signIn(email, password) {
   const cred = await signInWithEmailAndPassword(auth, email, password);
 
-  const role = roleForEmail(email);
-
-  // Refresh lastLoginAt; also patch role in case account pre-dates superadmin list
+  // Patch role and refresh lastLoginAt — must complete before onAuth reads the profile
   const updates = { lastLoginAt: serverTimestamp() };
-  if (SUPERADMIN_EMAILS.has(email.toLowerCase())) updates.role = 'superadmin';
+  updates.role = roleForEmail(email); // always write canonical role on sign-in
   await setDoc(doc(db, 'users', cred.user.uid), updates, { merge: true });
 
-  return { user: cred.user, role };
+  return { user: cred.user, role: updates.role };
 }
 
 // ─── Sign out ────────────────────────────────────────────────────────────────
@@ -127,6 +125,11 @@ export function onAuth(callback) {
   return onAuthStateChanged(auth, async (user) => {
     if (!user) { callback(null, null); return; }
     const profile = await getUserProfile(user.uid);
+    // Override stale role in case Firestore hasn't been patched yet
+    // (onAuthStateChanged fires before the setDoc in signIn() completes)
+    if (profile && SUPERADMIN_EMAILS.has(user.email?.toLowerCase())) {
+      profile.role = 'superadmin';
+    }
     callback(user, profile);
   });
 }

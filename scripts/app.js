@@ -810,7 +810,7 @@ async function runProgram(debugMode = false) {
   await interp.run(runSource, { debug: debugMode, stepMode: debugMode, relaxedIdentifiers });
 
   try {
-    if (currentUser) {
+    if (currentUser && currentProfile?.role === 'student') {
       await saveSession(currentUser.uid, {
         programId:   currentProgramId,
         source:      editor.getValue(),

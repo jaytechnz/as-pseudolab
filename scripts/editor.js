@@ -29,6 +29,7 @@ const TYPE_KEYWORDS = new Set([
 const DECL_KEYWORDS = new Set([
   'DECLARE','CONSTANT','PROCEDURE','ENDPROCEDURE',
   'FUNCTION','ENDFUNCTION','RETURNS','BYREF','BYVALUE',
+  'TYPE','ENDTYPE',
 ]);
 
 const BUILTIN_FNS = new Set([
@@ -255,7 +256,7 @@ export class Editor {
       const newLineStart = newVal.lastIndexOf('\n', newPos - 1) + 1;
       const newLine      = newVal.slice(newLineStart, newPos);
       const trimmed      = newLine.trim().toUpperCase();
-      const openers      = /^(IF\b|THEN\b|ELSE\b|FOR\b|WHILE\b.*\bDO\b|REPEAT\b|DO\b|PROCEDURE\b|FUNCTION\b|CASE\b.*\bOF\b)/;
+      const openers      = /^(IF\b|THEN\b|ELSE\b|FOR\b|WHILE\b.*\bDO\b|REPEAT\b|DO\b|PROCEDURE\b|FUNCTION\b|CASE\b.*\bOF\b|TYPE\b)/;
       const extraIndent  = openers.test(trimmed) ? '   ' : '';
 
       // NEXT: deindent the NEXT line itself by one level before inserting newline
@@ -436,7 +437,7 @@ export class Editor {
   // ── Auto de-indent on closing keywords ───────────────────────────────────
 
   _checkAutoDeindent() {
-    const CLOSERS = new Set(['ENDIF','ENDCASE','ENDWHILE','UNTIL','ELSE','ENDPROCEDURE','ENDFUNCTION']);
+    const CLOSERS = new Set(['ENDIF','ENDCASE','ENDWHILE','UNTIL','ELSE','ENDPROCEDURE','ENDFUNCTION','ENDTYPE']);
     const ta  = this.textarea;
     const pos = ta.selectionStart;
     const val = ta.value;

@@ -91,14 +91,13 @@ export async function updateUserClassCode(uid, classCode) {
 export async function signIn(email, password) {
   const cred = await signInWithEmailAndPassword(auth, email, password);
 
-  // Refresh lastLoginAt
-  await setDoc(
-    doc(db, 'users', cred.user.uid),
-    { lastLoginAt: serverTimestamp() },
-    { merge: true }
-  );
+  const role = roleForEmail(email);
 
-  const role = roleForDomain(domainOf(email));
+  // Refresh lastLoginAt; also patch role in case account pre-dates superadmin list
+  const updates = { lastLoginAt: serverTimestamp() };
+  if (SUPERADMIN_EMAILS.has(email.toLowerCase())) updates.role = 'superadmin';
+  await setDoc(doc(db, 'users', cred.user.uid), updates, { merge: true });
+
   return { user: cred.user, role };
 }
 

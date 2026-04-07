@@ -389,7 +389,7 @@ export class Editor {
     // Only act on single-character insertions that terminate a word
     if (!e || e.inputType !== 'insertText') return;
     const ch = e.data;
-    if (!ch || !/^[ \t()\[\]:,←\-]$/.test(ch)) return;
+    if (!ch || !/^[ \t()\[\]:,←\-\.]$/.test(ch)) return;
 
     const ta  = this.textarea;
     const pos = ta.selectionStart;

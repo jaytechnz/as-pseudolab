@@ -1221,7 +1221,7 @@ ex('fil-20','files','File: Write With Procedure','hard',
 `Write a PROCEDURE \`WriteToFile(BYVAL FileName : STRING, BYVAL Content : STRING)\` that opens the file FOR WRITE, writes Content, and closes it. Call it to write \`"Data saved"\` to \`"output.txt"\`. Then read and OUTPUT the file content.`,
 [t([],['Data saved'])],
 ['The procedure handles OPENFILE, WRITEFILE, CLOSEFILE', 'Read back manually: open FOR READ, READFILE, CLOSEFILE, OUTPUT'],
-PROC_SCAFFOLD, '', requireFileHandling),
+PROC_SCAFFOLD, '', src => fileCheck(src, 'WRITE', 'READ')),
 
 ex('fil-21','files','File: Append to a Log','medium',
 `Open \`"log.txt"\` FOR WRITE. WRITEFILE \`"Session started"\`. CLOSEFILE. Re-open FOR APPEND. WRITEFILE \`"User logged in"\`. CLOSEFILE. Re-open FOR APPEND. WRITEFILE \`"Task complete"\`. CLOSEFILE. Re-open FOR READ. Use WHILE NOT EOF to read and OUTPUT each line. CLOSEFILE when done.`,

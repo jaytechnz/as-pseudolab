@@ -270,9 +270,9 @@ ex('ope-14','operators','Quotient and Remainder','medium',
 ['Use DIV for the whole-number quotient', 'Use MOD for the remainder']),
 
 ex('ope-15','operators','Validate and Convert a Score','hard',
-`INPUT a string \`ScoreStr\`. If its LENGTH is greater than 0, convert it with \`STR_TO_NUM()\` and OUTPUT the score multiplied by 2. Otherwise OUTPUT \`No score provided\`.`,
-[t(['7'],['14']), t(['25'],['50']), t([''],['No score provided'])],
-['Use LENGTH to check the input is non-empty before converting', 'Only apply STR_TO_NUM when LENGTH > 0']),
+`INPUT a string \`ScoreStr\`. If \`IS_NUM(ScoreStr)\` returns TRUE, convert it with \`STR_TO_NUM()\` and OUTPUT the score multiplied by 2. Otherwise OUTPUT \`No score provided\`.`,
+[t(['7'],['14']), t(['25'],['50']), t(['abc'],['No score provided'])],
+['Use IS_NUM to check the input is a valid number before converting', 'Only apply STR_TO_NUM when IS_NUM returns TRUE']),
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SELECTION  (20)

@@ -286,7 +286,7 @@ ex('sel-01','selection','HTTP Status Category','medium',
 ex('sel-02','selection','Signal Strength Band','medium',
 `INPUT an integer \`DBm\` (signal strength, typically negative). OUTPUT \`Strong\` if > -60, \`Moderate\` if > -80, \`Weak\` if > -100, or \`No signal\` if <= -100.`,
 [t(['-55'],['Strong']), t(['-70'],['Moderate']), t(['-90'],['Weak']), t(['-105'],['No signal'])],
-['Consider using CASE OF with ranges, e.g. CASE OF DBm / > -60 : ...', 'A CASE statement is cleaner than a chain of ELSE IF when testing a single variable against multiple thresholds']),
+['Test the highest threshold (> -60) first', 'Use ELSE IF to work down through the bands — order matters here']),
 
 ex('sel-03','selection','Grade Classification','medium',
 `INPUT an integer \`Mark\` (0–100). OUTPUT the grade: \`A\` (≥70), \`B\` (≥55), \`C\` (≥40), or \`U\` (below 40).`,

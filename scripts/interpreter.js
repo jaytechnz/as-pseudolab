@@ -1864,10 +1864,11 @@ export class Interpreter {
       if (declType === 'INTEGER') return parseInt(raw, 10);
       if (declType === 'REAL')    return parseFloat(raw);
       if (declType === 'BOOLEAN') return raw.toUpperCase() === 'TRUE';
+      if (declType === 'STRING')  return raw;
       if (typeof existing === 'number') return Number(raw);
       if (typeof existing === 'boolean') return raw.toUpperCase() === 'TRUE';
     } catch (_) {}
-    // Heuristic
+    // Heuristic — only reached when no type declaration found
     if (/^-?\d+$/.test(raw.trim()))          return parseInt(raw, 10);
     if (/^-?\d+\.\d+$/.test(raw.trim()))     return parseFloat(raw);
     if (/^(TRUE|FALSE)$/i.test(raw.trim()))  return raw.toUpperCase() === 'TRUE';

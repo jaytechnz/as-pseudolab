@@ -1098,7 +1098,7 @@ ex('rec-15','records','Array of Records: Sort by Field','hard',
 '', '', requireNestedLoops),
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FILE HANDLING  (20)
+// FILE HANDLING  (20)  — fil-15 moved to strings (str-26); fil-21 added
 // ─────────────────────────────────────────────────────────────────────────────
 
 ex('fil-01','files','Write then Read a File','easy',
@@ -1114,9 +1114,9 @@ ex('fil-02','files','Write Multiple Lines','medium',
 '', '', requireFileHandling),
 
 ex('fil-03','files','Read with WHILE NOT EOF','medium',
-`Open \`"colours.txt"\` FOR WRITE. Write \`"red"\`, \`"green"\`, \`"blue"\`. CLOSEFILE. Re-open FOR READ. Use \`WHILE NOT EOF\` to READFILE each word and OUTPUT it in uppercase. CLOSEFILE when done.`,
+`Open \`"colours.txt"\` FOR WRITE. Write \`"red"\` and \`"green"\`. CLOSEFILE. Re-open FOR APPEND. Write \`"blue"\`. CLOSEFILE. Re-open FOR READ. Use \`WHILE NOT EOF\` to READFILE each word and OUTPUT it in uppercase. CLOSEFILE when done.`,
 [t([],['RED','GREEN','BLUE'])],
-['In AS 9618, WHILE does not use a DO keyword', 'Apply UCASE to each line read before outputting'],
+['Write the first two colours in WRITE mode, then close and re-open in APPEND mode to add the third', 'APPEND adds to the end without clearing the file', 'Apply UCASE to each line read before outputting'],
 '', '', requireFileHandling),
 
 ex('fil-04','files','Count Lines with EOF','medium',
@@ -1126,9 +1126,9 @@ ex('fil-04','files','Count Lines with EOF','medium',
 '', '', requireFileHandling),
 
 ex('fil-05','files','Read Until EOF and Output','medium',
-`Open \`"fruit.txt"\` FOR WRITE. Write \`"Apple"\`, \`"Banana"\`, \`"Cherry"\`. CLOSEFILE. Re-open FOR READ. Use WHILE NOT EOF to READFILE and OUTPUT each line. CLOSEFILE when done.`,
+`Open \`"fruit.txt"\` FOR WRITE. Write \`"Apple"\`. CLOSEFILE. Re-open FOR APPEND. Write \`"Banana"\`. CLOSEFILE. Re-open FOR APPEND. Write \`"Cherry"\`. CLOSEFILE. Re-open FOR READ. Use WHILE NOT EOF to READFILE and OUTPUT each line. CLOSEFILE when done.`,
 [t([],['Apple','Banana','Cherry'])],
-['Use a WHILE loop — read one line per iteration and output it immediately'],
+['Each APPEND re-open adds to the end of the file without clearing it', 'After all three writes, open FOR READ and use WHILE NOT EOF to read each line'],
 '', '', requireFileHandling),
 
 ex('fil-06','files','Append to File','hard',
@@ -1138,9 +1138,9 @@ ex('fil-06','files','Append to File','hard',
 '', '', requireFileHandling),
 
 ex('fil-07','files','Write Input Data to File','hard',
-`INPUT 3 strings from the user. Open \`"names.txt"\` FOR WRITE. WRITEFILE each string. CLOSEFILE. Re-open FOR READ. READFILE and OUTPUT each line. CLOSEFILE when done.`,
+`INPUT 3 names from the user. Open \`"names.txt"\` FOR WRITE. WRITEFILE the first two names. CLOSEFILE. Re-open FOR APPEND. WRITEFILE the third name. CLOSEFILE. Re-open FOR READ. READFILE and OUTPUT each line. CLOSEFILE when done.`,
 [t(['Alice','Bob','Charlie'],['Alice','Bob','Charlie'])],
-['Use a FOR loop to INPUT and WRITEFILE each string'],
+['Write the first two names in WRITE mode, then close and re-open FOR APPEND for the third', 'Read all three back using WHILE NOT EOF or three separate READFILE calls'],
 '', '', requireFileHandling),
 
 ex('fil-08','files','File: Largest Value','hard',
@@ -1198,15 +1198,15 @@ ex('fil-16','files','File: Write Even Numbers','medium',
 '', '', requireFileHandling),
 
 ex('fil-17','files','File: Filter Lines','hard',
-`Open \`"words.txt"\` FOR WRITE. Write \`"Cat"\`, \`"Elephant"\`, \`"Dog"\`, \`"Computer"\`, \`"Bee"\`. CLOSEFILE. Re-open FOR READ. Use WHILE NOT EOF to READFILE each word and OUTPUT only those with length > 3. CLOSEFILE when done.`,
+`Open \`"words.txt"\` FOR WRITE. Write \`"Cat"\`, \`"Dog"\`, \`"Bee"\`. CLOSEFILE. Re-open FOR APPEND. Write \`"Elephant"\` and \`"Computer"\`. CLOSEFILE. Re-open FOR READ. Use WHILE NOT EOF to READFILE each word and OUTPUT only those with LENGTH > 3. CLOSEFILE when done.`,
 [t([],['Elephant','Computer'])],
-['Check LENGTH(Word) > 3 inside the WHILE loop before outputting'],
+['Write the short words first in WRITE mode, then append the longer ones', 'Check LENGTH(Word) > 3 inside the WHILE loop before outputting'],
 '', '', requireFileHandling),
 
 ex('fil-18','files','File: Total from File','hard',
-`Open \`"payments.txt"\` FOR WRITE. Write 25, 50, 100, 75 (one per line). CLOSEFILE. Re-open FOR READ. Read and accumulate the total. CLOSEFILE, then OUTPUT the total.`,
+`Open \`"payments.txt"\` FOR WRITE. Write 25 and 50. CLOSEFILE. Re-open FOR APPEND. Write 100 and 75. CLOSEFILE. Re-open FOR READ. Read and accumulate the total. CLOSEFILE, then OUTPUT the total.`,
 [t([],['250'])],
-['Use WHILE NOT EOF to read and accumulate', 'READFILE values are auto-converted to numbers for arithmetic'],
+['Write the first two payments in WRITE mode, then append the remaining two', 'Use WHILE NOT EOF to read all four values and accumulate the total'],
 '', '', requireFileHandling),
 
 ex('fil-19','files','CSV: Write and Read Student Records','hard',
@@ -1220,6 +1220,12 @@ ex('fil-20','files','File: Write With Procedure','hard',
 [t([],['Data saved'])],
 ['The procedure handles OPENFILE, WRITEFILE, CLOSEFILE', 'Read back manually: open FOR READ, READFILE, CLOSEFILE, OUTPUT'],
 PROC_SCAFFOLD, '', requireFileHandling),
+
+ex('fil-21','files','File: Append to a Log','medium',
+`Open \`"log.txt"\` FOR WRITE. WRITEFILE \`"Session started"\`. CLOSEFILE. Re-open FOR APPEND. WRITEFILE \`"User logged in"\`. CLOSEFILE. Re-open FOR APPEND. WRITEFILE \`"Task complete"\`. CLOSEFILE. Re-open FOR READ. Use WHILE NOT EOF to read and OUTPUT each line. CLOSEFILE when done.`,
+[t([],['Session started','User logged in','Task complete'])],
+['WRITE mode creates the file and writes the first entry', 'Each APPEND re-open adds a new line without clearing what is already there', 'A third OPENFILE FOR APPEND adds the final entry before you read back'],
+'', '', requireFileHandling),
 
 // ─────────────────────────────────────────────────────────────────────────────
 // STANDARD ALGORITHMS  (15)

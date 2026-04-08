@@ -245,7 +245,7 @@ ex('ope-09','operators','Recipe Serving Size','medium',
 ['Use NUM_TO_STR to convert each integer before concatenating', 'Build the output string using & to join the labels and converted numbers']),
 
 ex('ope-10','operators','Arithmetic Precedence in Data Calculation','medium',
-`Declare \`Header ← 20\` (header bytes) and \`Payload ← 1000\` (payload bytes). OUTPUT the total frame size without extra parentheses: \`Header + Payload × 2\`. Then OUTPUT \`(Header + Payload) × 2\` on a second line.`,
+`Declare \`Header ← 20\` (header bytes) and \`Payload ← 1000\` (payload bytes). OUTPUT the total frame size without extra parentheses: \`Header + Payload * 2\`. Then OUTPUT \`(Header + Payload) * 2\` on a second line.`,
 [t([],['2020','2040'])],
 ['Multiplication has higher precedence: 20 + 1000 * 2 = 2020', 'Parentheses force the addition first: (20 + 1000) * 2 = 2040']),
 

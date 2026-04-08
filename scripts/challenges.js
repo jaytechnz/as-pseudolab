@@ -754,10 +754,14 @@ function fmtOutputArray(arr) {
 // into safe HTML for display in the challenge panel.
 function formatDesc(raw) {
   function inline(text) {
-    return escHtml(text)
-      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*([^*]+)\*/g,     '<em>$1</em>')
-      .replace(/`([^`]+)`/g,       '<code>$1</code>');
+    // Process code spans first (preserving their content), then bold/italic
+    const parts = escHtml(text).split(/(`[^`]+`)/g);
+    return parts.map((p, i) => {
+      if (i % 2 === 1) return '<code>' + p.slice(1, -1) + '</code>';
+      return p
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*([^*]+)\*/g,     '<em>$1</em>');
+    }).join('');
   }
 
   const blocks = String(raw ?? '').trim().split(/\n{2,}/);

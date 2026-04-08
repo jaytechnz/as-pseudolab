@@ -1411,18 +1411,18 @@ export class Interpreter {
         if (file.cursor >= file.lines.length)
           throw new RuntimeError(`EOF reached in '${fname}'`, stmt.line);
         const rawVal = file.lines[file.cursor++];
+        // File data is always text — no automatic coercion.
+        // Students must use STR_TO_NUM() explicitly for numeric variables.
         if (stmt.idx1 !== undefined) {
           // Array element target: READFILE "f.txt", arr[i]
           const arr = env.get(stmt.target);
           if (!(arr instanceof PseudoArray)) throw new RuntimeError(`'${stmt.target}' is not an array`, stmt.line);
-          const coerced = this._coerceInput(rawVal, env, stmt.target, arr.elementType);
           const i = this._evalNum(stmt.idx1, env);
           const j = stmt.idx2 ? this._evalNum(stmt.idx2, env) : null;
-          arr.set(i, j, coerced);
+          arr.set(i, j, rawVal);
         } else {
-          const coerced = this._coerceInput(rawVal, env, stmt.target);
-          if (env.has(stmt.target)) env.set(stmt.target, coerced);
-          else                       env.define(stmt.target, coerced);
+          if (env.has(stmt.target)) env.set(stmt.target, rawVal);
+          else                       env.define(stmt.target, rawVal);
         }
         if (this.onVarsChange) this.onVarsChange(env.snapshot());
         break;

@@ -1186,7 +1186,7 @@ ex('fil-14','files','File: Average from File','hard',
 '', '',
 src => requireFileHandling(src) ?? (/\bFOR\b/i.test(src) && /\bSTEP\b/i.test(src) ? null : 'You must use a FOR loop with a STEP value to write the data to the file')),
 
-ex('fil-15','files','CSV: Parse Fields with MID','hard',
+ex('fil-15','strings','CSV: Parse Fields with MID','hard',
 `Assign \`Line ← "Charlie,92,Pass"\`. Format: Name (7 chars), comma, Score (2 chars), comma, Result (4 chars). Extract and OUTPUT each field on a separate line.`,
 [t([],['Charlie','92','Pass'])],
 ['"Charlie" is 7 characters, starting at position 1', 'The score starts after the comma that follows Charlie — count positions to find it', 'The result starts after the second comma — count positions again']),

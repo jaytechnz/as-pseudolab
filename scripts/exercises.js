@@ -48,13 +48,13 @@ export const CATEGORIES = [
   { id: 'basics',     label: 'Basics & Data Types',              count: 25 },
   { id: 'operators',  label: 'Operators & Type Conversion',      count: 15 },
   { id: 'selection',  label: 'Selection',                        count: 20 },
-  { id: 'iteration',  label: 'Iteration',                        count: 20 },
+  { id: 'iteration',  label: 'Iteration',                        count: 19 },
   { id: 'strings',    label: 'String Handling',                  count: 25 },
   { id: 'procedures', label: 'Functions & Procedures',           count: 45 },
-  { id: 'arrays',     label: 'Arrays',                           count: 20 },
+  { id: 'arrays',     label: 'Arrays',                           count: 19 },
   { id: 'records',    label: 'Records',                          count: 15 },
   { id: 'files',      label: 'File Handling',                    count: 20 },
-  { id: 'algorithms', label: 'Standard Algorithms',              count: 15 },
+  { id: 'algorithms', label: 'Standard Algorithms',              count: 13 },
   { id: 'exam',       label: 'Exam Questions',                   count: 7  },
 ];
 
@@ -379,7 +379,7 @@ ex('sel-20','selection','Divisibility Classifier','medium',
 ['Check the combined condition first', 'Then check each individually in ELSE IF branches']),
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ITERATION  (20)
+// ITERATION  (19)
 // ─────────────────────────────────────────────────────────────────────────────
 
 ex('ite-01','iteration','FOR: Bit Positions','easy',
@@ -426,11 +426,6 @@ ex('ite-09','iteration','REPEAT: Password Length Validation','medium',
 `Use a REPEAT UNTIL loop to keep asking the user to INPUT a password until it has LENGTH >= 8 characters. OUTPUT the accepted password.`,
 [t(['hi','short','securepass'],['securepass']), t(['longenough'],['longenough'])],
 ['The UNTIL condition checks whether the password is now long enough', 'The loop body always runs at least once — so the first input is always processed']),
-
-ex('ite-10','iteration','REPEAT: Binary Search Simulation','hard',
-`The answer is 37. REPEAT: INPUT a guess. If correct OUTPUT \`Found!\`. If too high OUTPUT \`Lower\`. If too low OUTPUT \`Higher\`. UNTIL guess = 37.`,
-[t(['50','25','37'],['Lower','Higher','Found!']), t(['37'],['Found!'])],
-['Use REPEAT so the first guess is always processed', 'Use IF inside the loop to give feedback', 'The UNTIL condition stops the loop when the correct value is entered']),
 
 ex('ite-11','iteration','FOR: Factorial','hard',
 `INPUT a positive integer \`Number\`. Calculate its factorial using a FOR loop and OUTPUT the result.`,
@@ -903,7 +898,7 @@ ex('fun-35','procedures','Function: Validate Email','hard',
 PROC_SCAFFOLD),
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ARRAYS  (20)
+// ARRAYS  (19)
 // ─────────────────────────────────────────────────────────────────────────────
 
 ex('arr-01','arrays','Declare and Populate a 1D Array','easy',
@@ -1005,11 +1000,6 @@ ex('arr-19','arrays','Array: Rotate Right','hard',
 `Declare \`Data : ARRAY[1:5] OF INTEGER\` with values 1, 2, 3, 4, 5. Rotate all elements one position to the right (last element wraps to first). OUTPUT all 5 elements.`,
 [t([],['5','1','2','3','4'])],
 ['Save the last element before it gets overwritten', 'Loop backwards, copying each element one position to the right', 'Place the saved last element at position 1']),
-
-ex('arr-20','arrays','Array: Binary Search','hard',
-`Declare sorted \`Data : ARRAY[1:8] OF INTEGER\` with values 2, 5, 8, 12, 16, 23, 38, 56. INPUT a target. Use binary search to OUTPUT the 1-based position, or -1 if not found.`,
-[t(['12'],['4']), t(['2'],['1']), t(['99'],['-1']), t(['56'],['8'])],
-['Initialise low and high bounds to the array extents, and a result variable to -1 (not found)', 'Calculate the midpoint each iteration, compare to the target, then narrow either the lower or upper bound accordingly']),
 
 // ─────────────────────────────────────────────────────────────────────────────
 // RECORDS  (15)
@@ -1232,7 +1222,7 @@ ex('fil-21','files','File: Append to a Log','medium',
 '', '', src => fileCheck(src, 'WRITE', 'APPEND', 'READ')),
 
 // ─────────────────────────────────────────────────────────────────────────────
-// STANDARD ALGORITHMS  (15)
+// STANDARD ALGORITHMS  (13)
 // ─────────────────────────────────────────────────────────────────────────────
 
 ex('alg-01','algorithms','Linear Search: Found/Not Found','medium',
@@ -1277,11 +1267,6 @@ ex('alg-08','algorithms','Bubble Sort (Descending)','hard',
 ['Same structure as ascending but swap when adjacent elements are in the wrong order for descending'],
 '', '', requireNestedLoops),
 
-ex('alg-09','algorithms','Binary Search','hard',
-`Declare sorted \`Data : ARRAY[1:8] OF INTEGER\` with values 4, 8, 15, 16, 23, 42, 56, 73. INPUT a target. Use binary search to OUTPUT the 1-based position, or \`-1\` if not found.`,
-[t(['23'],['5']), t(['4'],['1']), t(['99'],['-1']), t(['73'],['8'])],
-['Initialise low and high pointers to the array bounds, and a result variable to -1', 'Calculate the midpoint each iteration, compare to the target, then narrow the search range accordingly']),
-
 ex('alg-10','algorithms','Find Highest and Its Position','hard',
 `INPUT 5 integers into an array. Find the highest value and its 1-based position. Use NUM_TO_STR and & to OUTPUT \`Max number: X\` then \`Position: Y\`.`,
 [t(['3','7','1','9','2'],['Max number: 9','Position: 4']), t(['10','4','6','8','2'],['Max number: 10','Position: 1'])],
@@ -1301,22 +1286,6 @@ ex('alg-13','algorithms','Linear Search in Parallel Arrays','hard',
 `Declare \`Names : ARRAY[1:5] OF STRING\` with "Alice","Bob","Charlie","David","Eve" and \`Ages : ARRAY[1:5] OF INTEGER\` with 14,15,13,16,15. INPUT a name. If found, OUTPUT the corresponding age. If not found, OUTPUT \`Not found\`.`,
 [t(['Charlie'],['13']), t(['Alice'],['14']), t(['Zara'],['Not found'])],
 ['Loop through Names looking for a match', 'Use the same index to look up Ages']),
-
-ex('alg-14','algorithms','Binary Search in Function','hard',
-`Write a FUNCTION \`BinarySearch(BYVAL Target : INTEGER) RETURNS INTEGER\` that searches the pre-loaded sorted array \`Nums\` (2,5,8,12,16,23,38,56) and returns the 1-based position or -1. INPUT a target, OUTPUT the result.`,
-[t(['23'],['6']), t(['2'],['1']), t(['50'],['-1'])],
-['Initialise low and high bounds inside the function; loop while the search range is still valid', 'Return the position variable after the loop ends'],
-PROC_SCAFFOLD,
-`DECLARE Nums : ARRAY[1:8] OF INTEGER
-Nums[1] ← 2
-Nums[2] ← 5
-Nums[3] ← 8
-Nums[4] ← 12
-Nums[5] ← 16
-Nums[6] ← 23
-Nums[7] ← 38
-Nums[8] ← 56
-`),
 
 ex('alg-15','algorithms','Sort a 2D Name Array','hard',
 `Declare \`Names : ARRAY[1:4, 1:2] OF STRING\` with rows: (Alice,Wong), (Bob,Smith), (Charlie,Brown), (Diana,Jones). Sort by last name (column 2) ascending using bubble sort. OUTPUT sorted full names.`,

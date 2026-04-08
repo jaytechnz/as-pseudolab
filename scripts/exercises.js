@@ -291,7 +291,7 @@ ex('sel-02','selection','Signal Strength Band','medium',
 ex('sel-03','selection','Grade Classification','medium',
 `INPUT an integer \`Mark\` (0–100). OUTPUT the grade: \`A\` (≥70), \`B\` (≥55), \`C\` (≥40), or \`U\` (below 40).`,
 [t(['75'],['A']), t(['60'],['B']), t(['42'],['C']), t(['30'],['U'])],
-['Test the highest threshold first', 'Use ELSE IF for subsequent grades']),
+['Consider using CASE OF with ranges, e.g. CASE OF Mark / 70 TO 100 : ...', 'A CASE statement is cleaner than a chain of ELSE IF when testing a single variable against multiple ranges']),
 
 ex('sel-04','selection','Access Level','medium',
 `INPUT an integer \`Level\` (1–4). Use CASE OF to OUTPUT: 4→\`Admin\`, 3→\`Moderator\`, 2→\`User\`, 1→\`Guest\`. Use OTHERWISE to OUTPUT \`Invalid level\`.`,

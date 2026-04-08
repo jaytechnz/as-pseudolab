@@ -26,6 +26,16 @@ function requireNestedLoops(source) {
   return count >= 2 ? null : 'You must use nested loops (an outer loop and an inner loop).';
 }
 
+function requireFileHandling(source) {
+  if (!/\bOPENFILE\b/i.test(source))
+    return 'You must open the file using OPENFILE before reading or writing.';
+  if (!/\bOPENFILE\b.*\bFOR\b\s*(READ|WRITE|APPEND)\b/i.test(source))
+    return 'OPENFILE must specify a mode: FOR READ, FOR WRITE, or FOR APPEND.';
+  if (!/\bCLOSEFILE\b/i.test(source))
+    return 'You must close the file using CLOSEFILE when you are done with it.';
+  return null;
+}
+
 // ══════════════════════════════════════════════════════════════════════════════
 // CATEGORY METADATA
 // ══════════════════════════════════════════════════════════════════════════════
@@ -1094,75 +1104,87 @@ ex('rec-15','records','Array of Records: Sort by Field','hard',
 ex('fil-01','files','Write then Read a File','easy',
 `Use \`OPENFILE "data.txt" FOR WRITE\` to open the file. WRITEFILE the line \`"Hello, World!"\`. CLOSEFILE. Re-open FOR READ. READFILE into a variable. CLOSEFILE and OUTPUT the variable.`,
 [t([],['Hello, World!'])],
-['OPENFILE before reading or writing; CLOSEFILE when done', 'WRITEFILE writes a line; READFILE reads a line into a variable']),
+['OPENFILE before reading or writing; CLOSEFILE when done', 'WRITEFILE writes a line; READFILE reads a line into a variable'],
+'', '', requireFileHandling),
 
 ex('fil-02','files','Write Multiple Lines','medium',
 `Open \`"test.txt"\` FOR WRITE. WRITEFILE \`"Line 1"\`, \`"Line 2"\`, \`"Line 3"\`. CLOSEFILE. Re-open FOR READ. READFILE each line and OUTPUT them. CLOSEFILE when done.`,
 [t([],['Line 1','Line 2','Line 3'])],
-['Write all three lines in FOR WRITE mode, then CLOSEFILE', 'Re-open FOR READ, use READFILE for each line']),
+['Write all three lines in FOR WRITE mode, then CLOSEFILE', 'Re-open FOR READ, use READFILE for each line'],
+'', '', requireFileHandling),
 
 ex('fil-03','files','Read with WHILE NOT EOF','medium',
 `Open \`"colours.txt"\` FOR WRITE. Write \`"red"\`, \`"green"\`, \`"blue"\`. CLOSEFILE. Re-open FOR READ. Use \`WHILE NOT EOF\` to READFILE each word and OUTPUT it in uppercase. CLOSEFILE when done.`,
 [t([],['RED','GREEN','BLUE'])],
-['In AS 9618, WHILE does not use a DO keyword', 'Apply UCASE to each line read before outputting']),
+['In AS 9618, WHILE does not use a DO keyword', 'Apply UCASE to each line read before outputting'],
+'', '', requireFileHandling),
 
 ex('fil-04','files','Count Lines with EOF','medium',
 `Open \`"five.txt"\` FOR WRITE. Write \`"A"\`, \`"B"\`, \`"C"\`, \`"D"\`, \`"E"\`. CLOSEFILE. Re-open FOR READ. Use WHILE NOT EOF to count the lines. CLOSEFILE, then OUTPUT the count.`,
 [t([],['5'])],
-['Use WHILE NOT EOF("five.txt") and increment a counter each time READFILE is called']),
+['Use WHILE NOT EOF("five.txt") and increment a counter each time READFILE is called'],
+'', '', requireFileHandling),
 
 ex('fil-05','files','Read Until EOF and Output','medium',
 `Open \`"fruit.txt"\` FOR WRITE. Write \`"Apple"\`, \`"Banana"\`, \`"Cherry"\`. CLOSEFILE. Re-open FOR READ. Use WHILE NOT EOF to READFILE and OUTPUT each line. CLOSEFILE when done.`,
 [t([],['Apple','Banana','Cherry'])],
-['Use a WHILE loop — read one line per iteration and output it immediately']),
+['Use a WHILE loop — read one line per iteration and output it immediately'],
+'', '', requireFileHandling),
 
 ex('fil-06','files','Append to File','hard',
 `Open \`"greet.txt"\` FOR WRITE. Write \`"Hello"\`. CLOSEFILE. Re-open FOR APPEND. Write \`"World"\`. CLOSEFILE. Re-open FOR READ. OUTPUT both lines. CLOSEFILE when done.`,
 [t([],['Hello','World'])],
-['WRITE mode clears the file; APPEND mode adds to the end']),
+['WRITE mode clears the file; APPEND mode adds to the end'],
+'', '', requireFileHandling),
 
 ex('fil-07','files','Write Input Data to File','hard',
 `INPUT 3 strings from the user. Open \`"names.txt"\` FOR WRITE. WRITEFILE each string. CLOSEFILE. Re-open FOR READ. READFILE and OUTPUT each line. CLOSEFILE when done.`,
 [t(['Alice','Bob','Charlie'],['Alice','Bob','Charlie'])],
-['Use a FOR loop to INPUT and WRITEFILE each string']),
+['Use a FOR loop to INPUT and WRITEFILE each string'],
+'', '', requireFileHandling),
 
 ex('fil-08','files','File: Largest Value','hard',
 `Open \`"vals.txt"\` FOR WRITE. Write integers 7, 3, 9, 1, 5 (one per line). CLOSEFILE. Re-open FOR READ. Use WHILE NOT EOF to track the largest. CLOSEFILE, then OUTPUT the largest.`,
 [t([],['9'])],
-['Initialise Max before the loop using the first value', 'Update Max inside the loop when a larger value is found']),
+['Initialise Max before the loop using the first value', 'Update Max inside the loop when a larger value is found'],
+'', '', requireFileHandling),
 
 ex('fil-09','files','File: Count Even Numbers','hard',
 `Open \`"nums.txt"\` FOR WRITE. Write numbers 1 to 8 (one per line). CLOSEFILE. Re-open FOR READ. Use WHILE NOT EOF to count even numbers. CLOSEFILE, then OUTPUT the count.`,
 [t([],['4'])],
-['Use MOD 2 = 0 to test for even', 'Output the count after CLOSEFILE']),
+['Use MOD 2 = 0 to test for even', 'Output the count after CLOSEFILE'],
+'', '', requireFileHandling),
 
 ex('fil-10','files','CSV: Write and Read a Record','hard',
 `Create a CSV record: \`"Alice,85"\`. Open \`"scores.csv"\` FOR WRITE. WRITEFILE the string. CLOSEFILE. Re-open FOR READ. READFILE into \`Record\`. CLOSEFILE. Use MID to extract the name (first 5 chars) and the score portion. OUTPUT each on a separate line.`,
 [t([],['Alice','85'])],
-['Write the name and score as a single comma-separated string', '"Alice" is the first 5 characters of the line', 'The score starts 2 positions after the comma — count along the string to find the position']),
+['Write the name and score as a single comma-separated string', '"Alice" is the first 5 characters of the line', 'The score starts 2 positions after the comma — count along the string to find the position'],
+'', '', requireFileHandling),
 
 ex('fil-11','files','CSV: Write Multiple Records','hard',
 `Write \`"Alice,85"\` and \`"Bob,72"\` to \`"class.csv"\` FOR WRITE. CLOSEFILE. Re-open FOR READ. Use WHILE NOT EOF to READFILE each line and OUTPUT the name portion.`,
 [t([],['Alice','Bob'])],
-['Write each record as a single string with a comma separator', 'For "Alice,85" the name is 5 characters; for "Bob,72" it is 3']),
+['Write each record as a single string with a comma separator', 'For "Alice,85" the name is 5 characters; for "Bob,72" it is 3'],
+'', '', requireFileHandling),
 
 ex('fil-12','files','File: Two Files','hard',
 `Write \`"Hello"\` to \`file1.txt\` and \`"World"\` to \`file2.txt\`. Read both back and OUTPUT the two values joined by a space.`,
 [t([],['Hello World'])],
-['Open, write, and close each file separately', 'Read each into a separate variable', 'Join with & " " &']),
+['Open, write, and close each file separately', 'Read each into a separate variable', 'Join with & " " &'],
+'', '', requireFileHandling),
 
 ex('fil-13','files','File: Reverse Lines','hard',
 `Open \`"letters.txt"\` FOR WRITE. Write \`"A"\`, \`"B"\`, \`"C"\`, \`"D"\`. CLOSEFILE. Re-open FOR READ. Read all lines into an array. CLOSEFILE, then OUTPUT the lines in reverse order.`,
 [t([],['D','C','B','A'])],
 ['Read into an array using READFILE inside a loop', 'OUTPUT with a FOR loop using STEP -1'],
-'', '', requireTwoLoops),
+'', '', src => requireFileHandling(src) ?? requireTwoLoops(src)),
 
 ex('fil-14','files','File: Average from File','hard',
 `Write values 10, 20, 30, 40, 50 to \`"data.txt"\` using a FOR loop with STEP 10. Read them back and OUTPUT their average.`,
 [t([],['30'])],
 ['Use a FOR loop with STEP 10 to generate and write the values 10 to 50', 'Use WHILE NOT EOF to read them back and accumulate the sum'],
 '', '',
-src => /\bFOR\b/i.test(src) && /\bSTEP\b/i.test(src) ? null : 'You must use a FOR loop with a STEP value to write the data to the file'),
+src => requireFileHandling(src) ?? (/\bFOR\b/i.test(src) && /\bSTEP\b/i.test(src) ? null : 'You must use a FOR loop with a STEP value to write the data to the file')),
 
 ex('fil-15','files','CSV: Parse Fields with MID','hard',
 `Assign \`Line ← "Charlie,92,Pass"\`. Format: Name (7 chars), comma, Score (2 chars), comma, Result (4 chars). Extract and OUTPUT each field on a separate line.`,
@@ -1172,28 +1194,32 @@ ex('fil-15','files','CSV: Parse Fields with MID','hard',
 ex('fil-16','files','File: Write Even Numbers','medium',
 `Open \`"evens.txt"\` FOR WRITE. Use a FOR loop with STEP 2 to write even numbers from 2 to 10. CLOSEFILE. Re-open FOR READ. Use WHILE NOT EOF to read and OUTPUT each number. CLOSEFILE when done.`,
 [t([],['2','4','6','8','10'])],
-['Use STEP 2 in your FOR loop to generate only even numbers', 'In AS 9618, WHILE does not use a DO keyword']),
+['Use STEP 2 in your FOR loop to generate only even numbers', 'In AS 9618, WHILE does not use a DO keyword'],
+'', '', requireFileHandling),
 
 ex('fil-17','files','File: Filter Lines','hard',
 `Open \`"words.txt"\` FOR WRITE. Write \`"Cat"\`, \`"Elephant"\`, \`"Dog"\`, \`"Computer"\`, \`"Bee"\`. CLOSEFILE. Re-open FOR READ. Use WHILE NOT EOF to READFILE each word and OUTPUT only those with length > 3. CLOSEFILE when done.`,
 [t([],['Elephant','Computer'])],
-['Check LENGTH(Word) > 3 inside the WHILE loop before outputting']),
+['Check LENGTH(Word) > 3 inside the WHILE loop before outputting'],
+'', '', requireFileHandling),
 
 ex('fil-18','files','File: Total from File','hard',
 `Open \`"payments.txt"\` FOR WRITE. Write 25, 50, 100, 75 (one per line). CLOSEFILE. Re-open FOR READ. Read and accumulate the total. CLOSEFILE, then OUTPUT the total.`,
 [t([],['250'])],
-['Use WHILE NOT EOF to read and accumulate', 'READFILE values are auto-converted to numbers for arithmetic']),
+['Use WHILE NOT EOF to read and accumulate', 'READFILE values are auto-converted to numbers for arithmetic'],
+'', '', requireFileHandling),
 
 ex('fil-19','files','CSV: Write and Read Student Records','hard',
 `Write three CSV lines to \`"students.csv"\`: \`"Alice,85"\`, \`"Bob,72"\`, \`"Carol,91"\`. Re-open FOR READ. Use WHILE NOT EOF to read each line and OUTPUT the name and score separated by \`": "\`.`,
 [t([],['Alice: 85','Bob: 72','Carol: 91'])],
-['Alice is 5 characters; the score starts 2 positions after the comma', 'Join the name and score with ": " between them using &']),
+['Alice is 5 characters; the score starts 2 positions after the comma', 'Join the name and score with ": " between them using &'],
+'', '', requireFileHandling),
 
 ex('fil-20','files','File: Write With Procedure','hard',
 `Write a PROCEDURE \`WriteToFile(BYVAL FileName : STRING, BYVAL Content : STRING)\` that opens the file FOR WRITE, writes Content, and closes it. Call it to write \`"Data saved"\` to \`"output.txt"\`. Then read and OUTPUT the file content.`,
 [t([],['Data saved'])],
 ['The procedure handles OPENFILE, WRITEFILE, CLOSEFILE', 'Read back manually: open FOR READ, READFILE, CLOSEFILE, OUTPUT'],
-PROC_SCAFFOLD),
+PROC_SCAFFOLD, '', requireFileHandling),
 
 // ─────────────────────────────────────────────────────────────────────────────
 // STANDARD ALGORITHMS  (15)

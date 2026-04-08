@@ -29,8 +29,10 @@ function requireNestedLoops(source) {
 function fileCheck(source, ...modes) {
   if (!/\bOPENFILE\b/i.test(source))
     return 'You must open the file using OPENFILE before reading or writing.';
-  if (!/\bCLOSEFILE\b/i.test(source))
-    return 'You must close the file using CLOSEFILE when you are done with it.';
+  const openCount  = (source.match(/\bOPENFILE\b/gi)  || []).length;
+  const closeCount = (source.match(/\bCLOSEFILE\b/gi) || []).length;
+  if (closeCount < openCount)
+    return 'You must close the file with CLOSEFILE every time you open it.';
   for (const mode of modes) {
     if (!new RegExp(`\\bOPENFILE\\b[^\\n]*\\bFOR\\s+${mode}\\b`, 'i').test(source))
       return `You must open the file FOR ${mode} as the instructions require.`;
@@ -1128,9 +1130,9 @@ ex('fil-04','files','Count Lines with EOF','medium',
 '', '', src => fileCheck(src, 'WRITE', 'READ')),
 
 ex('fil-05','files','Read Until EOF and Output','medium',
-`Open \`"fruit.txt"\` FOR WRITE. Write \`"Apple"\`. CLOSEFILE. Re-open FOR APPEND. Write \`"Banana"\`. CLOSEFILE. Re-open FOR APPEND. Write \`"Cherry"\`. CLOSEFILE. Re-open FOR READ. Use WHILE NOT EOF to READFILE and OUTPUT each line. CLOSEFILE when done.`,
+`Open \`"fruit.txt"\` FOR WRITE. Write \`"Apple"\`. CLOSEFILE. Re-open FOR APPEND. Write \`"Banana"\` and \`"Cherry"\` in the same session. CLOSEFILE. Re-open FOR READ. Use WHILE NOT EOF to READFILE and OUTPUT each line. CLOSEFILE when done.`,
 [t([],['Apple','Banana','Cherry'])],
-['Each APPEND re-open adds to the end of the file without clearing it', 'After all three writes, open FOR READ and use WHILE NOT EOF to read each line'],
+['Write "Apple" in WRITE mode, then open once FOR APPEND to write both "Banana" and "Cherry" before closing', 'After all three writes, open FOR READ and use WHILE NOT EOF to read each line'],
 '', '', src => fileCheck(src, 'WRITE', 'APPEND', 'READ')),
 
 ex('fil-06','files','Append to File','hard',

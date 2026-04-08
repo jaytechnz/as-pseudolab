@@ -45,9 +45,10 @@ const KEYWORDS = new Set([
 // Built-in library function names — NOT reserved as keywords so that identifiers
 // like 'Length' or 'Random' can be used as variable names without clashing.
 const BUILTIN_NAMES = new Set([
-  'LENGTH','LCASE','UCASE','SUBSTRING','MID','RIGHT','LEFT',
-  'TO_STRING','TO_INTEGER','TO_REAL','STR_TO_NUM','NUM_TO_STR',
-  'ROUND','INT','RANDOM','RAND','EOF',
+  'LENGTH','LCASE','UCASE','TO_UPPER','TO_LOWER','SUBSTRING','MID','RIGHT','LEFT',
+  'TO_STRING','TO_INTEGER','TO_REAL','STR_TO_NUM','NUM_TO_STR','IS_NUM',
+  'ASC','CHR','ROUND','INT','RANDOM','RAND','EOF',
+  'DAY','MONTH','YEAR','DAYINDEX','SETDATE','TODAY',
 ]);
 
 class Token {
@@ -1622,8 +1623,10 @@ export class Interpreter {
         throw new RuntimeError('LENGTH requires a string or array', node.line);
       }
       case 'LCASE':
+      case 'TO_LOWER':
         return String(this._eval(args[0], env)).toLowerCase();
       case 'UCASE':
+      case 'TO_UPPER':
         return String(this._eval(args[0], env)).toUpperCase();
       case 'SUBSTRING':
       case 'MID': {
@@ -1660,8 +1663,10 @@ export class Interpreter {
         return Object.assign(new Number(n), { _dp: dp });
       }
       case 'RANDOM':
-      case 'RAND':
-        return Math.random();
+      case 'RAND': {
+        const x = args.length ? this._evalNum(args[0], env) : 1;
+        return Math.random() * x;
+      }
       case 'EOF': {
         const fname = this._stringify(this._eval(args[0], env));
         const file  = this.virtualFiles.get(fname);
@@ -1677,6 +1682,48 @@ export class Interpreter {
         const a = this._evalNum(args[0], env);
         const b = this._evalNum(args[1], env);
         return Math.trunc(a / b);
+      }
+      case 'IS_NUM': {
+        const s = String(this._eval(args[0], env)).trim();
+        return s !== '' && !isNaN(Number(s));
+      }
+      case 'ASC': {
+        const ch = String(this._eval(args[0], env));
+        if (!ch.length) throw new RuntimeError('ASC requires a non-empty CHAR', node.line);
+        return ch.charCodeAt(0);
+      }
+      case 'CHR':
+        return String.fromCharCode(this._evalNum(args[0], env));
+      case 'TODAY':
+        return new Date();
+      case 'DAY': {
+        const d = this._eval(args[0], env);
+        if (d instanceof Date) return d.getDate();
+        return parseInt(String(d).split('/')[0], 10);
+      }
+      case 'MONTH': {
+        const d = this._eval(args[0], env);
+        if (d instanceof Date) return d.getMonth() + 1;
+        return parseInt(String(d).split('/')[1], 10);
+      }
+      case 'YEAR': {
+        const d = this._eval(args[0], env);
+        if (d instanceof Date) return d.getFullYear();
+        return parseInt(String(d).split('/')[2], 10);
+      }
+      case 'DAYINDEX': {
+        const d = this._eval(args[0], env);
+        const date = (d instanceof Date) ? d : (() => {
+          const p = String(d).split('/');
+          return new Date(parseInt(p[2],10), parseInt(p[1],10)-1, parseInt(p[0],10));
+        })();
+        return date.getDay() + 1; // Sunday=1, Monday=2, ..., Saturday=7
+      }
+      case 'SETDATE': {
+        const day   = this._evalNum(args[0], env);
+        const month = this._evalNum(args[1], env);
+        const year  = this._evalNum(args[2], env);
+        return new Date(year, month - 1, day);
       }
       default: {
         // User-defined function — must use await if async; but _eval is sync.
@@ -1833,6 +1880,11 @@ export class Interpreter {
     if (v instanceof PseudoArray)  return v.display();
     if (v instanceof PseudoRecord) return v.display();
     if (v instanceof Number && v._dp !== undefined) return v.valueOf().toFixed(v._dp);
+    if (v instanceof Date) {
+      const d = String(v.getDate()).padStart(2, '0');
+      const m = String(v.getMonth() + 1).padStart(2, '0');
+      return `${d}/${m}/${v.getFullYear()}`;
+    }
     return String(v);
   }
 
